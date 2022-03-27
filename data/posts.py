@@ -13,6 +13,6 @@ class Post(SqlAlchemyBase):
     content = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     reply_to_id = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
-
+    files = sqlalchemy.Column(sqlalchemy.String,nullable=True)
     def __repr__(self):
         return f'{self.id}: (to {self.reply_to_id}) {self.title}\t{self.content}'
