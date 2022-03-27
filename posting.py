@@ -16,6 +16,7 @@ posts = [
     Post(title="ТРИЧ, сейчас я расскажу, как я устроился на работу", content="*история про говно*", reply_to_id=0),
     Post(title="", content="блять", reply_to_id=5),
     Post(title="ЭТО ТЕСТОВАЯ ФГНЯ, НЕ ОБРАЩАЙТЕ ВНИМАНИЕ", content="блять2", reply_to_id=0),
+    Post(title="ЭТО ТЕСТОВАЯ ФГНЯ, НЕ ОБРАЩАЙТЕ ВНИМАНИЕ", content="блять2", reply_to_id=0),
 ]
 for post in posts:
     db_sess.add(post)

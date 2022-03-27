@@ -49,7 +49,7 @@ def get_format_posts():
             posts[post.id] = post
         # print(tree)
         walk_and_show(tree)
-
+        print(format_posts)
         # for i in format_posts:
         #     print(i)
 

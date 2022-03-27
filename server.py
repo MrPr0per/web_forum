@@ -13,6 +13,7 @@ def index():
     return render_template("main.html", format_posts=format_posts)
 
 
+
 def main():
     db_session.global_init("db/borda.db")
     app.run(port=8080, host='127.0.0.1')
