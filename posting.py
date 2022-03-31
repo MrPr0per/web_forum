@@ -6,6 +6,8 @@ db_sess = db_session.create_session()
 
 for post in db_sess.query(b).all():
     db_sess.delete(post)
+for post in db_sess.query(abu).all():
+    db_sess.delete(post)
 db_sess.commit()
 
 posts = [
