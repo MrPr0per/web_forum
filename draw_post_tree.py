@@ -1,12 +1,17 @@
-from data.posts import Post
 from data import db_session
 
 db_session.global_init("db/borda.db")
 db_sess = db_session.create_session()
 
 tree = {0: {}}
-posts = {0: Post()}
+posts2 = dict()
 format_posts = []
+
+def delete_data():
+    global tree, posts2,format_posts
+    tree = {0: {}}
+    posts2 = dict()
+    format_posts = []
 
 
 def walk(tree, deep=0):
@@ -31,22 +36,36 @@ def walk_and_push(tree, reply_to, id):
 
 
 def walk_and_show(tree, deep=0):
+    global posts2
     if len(tree.keys()) == 0:
         return
     for k, v in tree.items():
         # print('\t' * deep, posts[k].title, posts[k].content)
-        format_posts.append((deep, posts[k]))
+        print(posts2)
+        print(posts2[0])
+        format_posts.append((deep, posts2[k]))
+        print(format_posts)
         # print('\t' * deep, 'ответы:')
         walk_and_show(v, deep=deep + 1)
         # print('\t' * deep, '}')
     return
 
+# def load(db_section):
+#     result = None
+#     exec('from data.posts import ' + db_section)
+#     exec('result = ' + db_section)
+#     return result
 
-def get_format_posts():
+def get_format_posts(db_section):
+    from data import posts
+    a = getattr(posts,db_section)
+    global posts2
+    posts2 = {0: a()}
     if not format_posts:
-        for post in db_sess.query(Post).all():
+        for post in db_sess.query(a).all():
             walk_and_push(tree, post.reply_to_id, post.id)
-            posts[post.id] = post
+            posts2[post.id] = post
+        print(posts2)
         # print(tree)
         walk_and_show(tree)
 
