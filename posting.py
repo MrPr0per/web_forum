@@ -1,4 +1,4 @@
-from data.posts import b
+from data.posts import b,abu
 from data import db_session
 
 db_session.global_init("db/borda.db")
@@ -16,6 +16,7 @@ posts = [
     b(title="ТРИЧ, сейчас я расскажу, как я устроился на работу", content="*история про говно*", reply_to_id=0),
     b(title="тред головы", content="голова, дай деняк", reply_to_id=5, files="static/images/yoba.png"),
     b(title="сейчас я вам расскажу историю, как я наполнял пакеты водой и кидал с 9 этажа", content="", reply_to_id=0, files="static/images/yoba.png"),
+    abu(title="3ch успешно создается", content="скро появятся истории про говно",reply_to_id=0, files="static/images/yoba.png")
 ]
 for post in posts:
     db_sess.add(post)
