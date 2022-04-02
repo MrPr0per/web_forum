@@ -41,10 +41,7 @@ def walk_and_show(tree, deep=0):
         return
     for k, v in tree.items():
         # print('\t' * deep, posts[k].title, posts[k].content)
-        print(posts2)
-        print(posts2[0])
         format_posts.append((deep, posts2[k]))
-        print(format_posts)
         # print('\t' * deep, 'ответы:')
         walk_and_show(v, deep=deep + 1)
         # print('\t' * deep, '}')
@@ -65,7 +62,6 @@ def get_format_posts(db_section):
         for post in db_sess.query(a).all():
             walk_and_push(tree, post.reply_to_id, post.id)
             posts2[post.id] = post
-        print(posts2)
         # print(tree)
         walk_and_show(tree)
 

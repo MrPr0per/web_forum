@@ -1,14 +1,16 @@
 {% extends "base.html" %}
 {%block content%}
-
     {% for deep, post in format_posts%}
         {%if deep > 0%}
             <div class="col-md6 border rounded">
-                <h2 style="margin-left: {{100 * (deep-1)}}px;">{{post.title}}</h2>
                 <img src={{post.files}} alt="нет картинки" width="100" style="margin-left: {{100*(deep-1)}}px;">
+                <h2 style="margin-left: {{100 * (deep-1)}}px;">{{post.title}}</h2>
                 <div style="margin-left: {{100 * (deep-1)}}px;">
                     {{post.content}}
                 </div>
+                <form action="messenge_to/{{section}}/{{post.id}}" method="post">
+                    <button style="margin-left: {{100 * (deep-1)}}px;" type="submit" class="position_center borders">ответить</button>
+                </form>
             </div>
         {%endif%}
     {% endfor %}

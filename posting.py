@@ -1,8 +1,16 @@
-from data.posts import b,abu
+from data.posts import b,abu #это надо будет стереть
 from data import db_session
 
 db_session.global_init("db/borda.db")
 db_sess = db_session.create_session()
+
+def create_post(section, title,messenge,reply_to_id,file=""):
+    from data import posts
+    a = getattr(posts, section)
+    post = a(title=title, content=messenge, reply_to_id=reply_to_id)
+    db_sess.add(post)
+    db_sess.commit()
+    pass
 
 for post in db_sess.query(b).all():
     db_sess.delete(post)
