@@ -52,8 +52,10 @@ def index2(db_section):
     if form2.validate_on_submit():
         data = int(request.form["data"])
         index= int(request.form["index"])
-        format_posts[index][2] = data
-        hidden_posts.append(format_posts[index][1][0])
+        format_posts[index] = ( format_posts[index][0], format_posts[index][1], data)
+        hidden_posts.append(format_posts[index][1].id)
+
+        #print(type(format_posts[index][1]))
         # этот ретерн можно не писать
         # return redirect(f'/messenge_to/{db_section}/{id}')
     #print(format_posts)
