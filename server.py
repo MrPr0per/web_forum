@@ -13,6 +13,7 @@ boards = [["разное","/abu","/b","/media","/r","soc"],
           ["творчество","/de","/di","/diy","/mus","/p","/pa"],
           ["политикка","/hry","/news","/po"]]
 
+hidden_posts=[]
 
 class Answer_Form(FlaskForm):
     title = StringField('введите заголовок', validators=[DataRequired()])
@@ -21,6 +22,9 @@ class Answer_Form(FlaskForm):
 
 class Answer_button(FlaskForm):
     submit = SubmitField('ответить')
+
+class Close_button(FlaskForm):
+    submit2 = SubmitField('')
 
 @app.route("/")
 def index():
@@ -40,13 +44,22 @@ def create_messenge(section,id):
 @app.route("/<db_section>" ,methods=['GET', 'POST'])
 def index2(db_section):
     from draw_post_tree import get_format_posts, delete_data
-    delete_data()
-    format_posts = get_format_posts(db_section)
-    form = Answer_button()
-    # if form.validate_on_submit():
+    if not len(hidden_posts):
+        delete_data()
+        format_posts = get_format_posts(db_section)
+    form2 = Close_button()
+    print(format_posts)
+    if form2.validate_on_submit():
+        data = int(request.form["data"])
+        index= int(request.form["index"])
+        format_posts[index][2] = data
+        hidden_posts.append(format_posts[index][1][0])
         # этот ретерн можно не писать
         # return redirect(f'/messenge_to/{db_section}/{id}')
-    return render_template("main.html", format_posts=format_posts,form=form,section=db_section)
+    #print(format_posts)
+
+
+    return render_template("main.html", format_posts=format_posts,section=db_section,form2=form2)
 
 def main():
     db_session.global_init("db/borda.db")

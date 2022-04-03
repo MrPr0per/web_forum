@@ -41,7 +41,17 @@ def walk_and_show(tree, deep=0):
         return
     for k, v in tree.items():
         # print('\t' * deep, posts[k].title, posts[k].content)
-        format_posts.append((deep, posts2[k]))
+        if deep == 1:
+            format_posts.append((deep, posts2[k],1))
+        else:
+            format_posts.append((deep, posts2[k],0))
+        #                                       /.\
+        # _______________________________________|
+        #этот костыль нужен для закрытия постов, которые не читаешь, да, я знаю, что гений проектирования
+        #если значение == 0, то закрывающей кнопки нет
+        #если значение == 1, то закрывающая кнопка есть, но она выключена
+        #если значение == 2, то закрывающая кнопка есть, и она включена
+
         # print('\t' * deep, 'ответы:')
         walk_and_show(v, deep=deep + 1)
         # print('\t' * deep, '}')
