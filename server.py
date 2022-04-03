@@ -42,6 +42,12 @@ def create_messenge(section,id):
         return redirect(f'/{section}')
     return render_template("messenge_form.html", form=form, to_id = id)
 
+def hide_posts(begin_id, posts):
+    for i in posts:
+        if i[1].reply_to_id == begin_id:
+            hidden_posts.append(i[1].id)
+            hide_posts(i[1].id, posts)
+    pass
 @app.route("/<db_section>" ,methods=['GET', 'POST'])
 def index2(db_section):
     from draw_post_tree import get_format_posts, delete_data
@@ -55,7 +61,7 @@ def index2(db_section):
         format_posts[index] = (format_posts[index][0], format_posts[index][1], data)
         hidden_posts.append(format_posts[index][1].id)
         buttons[format_posts[index][1].id] = 1
-
+        hide_posts(format_posts[index][1].id, format_posts)
         #print(type(format_posts[index][1]))
         # этот ретерн можно не писать
         # return redirect(f'/messenge_to/{db_section}/{id}')
