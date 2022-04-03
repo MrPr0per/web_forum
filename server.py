@@ -14,6 +14,7 @@ boards = [["разное","/abu","/b","/media","/r","soc"],
           ["политикка","/hry","/news","/po"]]
 
 hidden_posts=[]
+buttons=dict()
 
 class Answer_Form(FlaskForm):
     title = StringField('введите заголовок', validators=[DataRequired()])
@@ -24,7 +25,7 @@ class Answer_button(FlaskForm):
     submit = SubmitField('ответить')
 
 class Close_button(FlaskForm):
-    submit2 = SubmitField('')
+    submit2 = SubmitField('скрыть/открыть ответы')
 
 @app.route("/")
 def index():
@@ -44,16 +45,16 @@ def create_messenge(section,id):
 @app.route("/<db_section>" ,methods=['GET', 'POST'])
 def index2(db_section):
     from draw_post_tree import get_format_posts, delete_data
-    if not len(hidden_posts):
-        delete_data()
-        format_posts = get_format_posts(db_section)
+    # if not len(hidden_posts):
+    delete_data()
+    format_posts = get_format_posts(db_section)
     form2 = Close_button()
-    print(format_posts)
     if form2.validate_on_submit():
         data = int(request.form["data"])
         index= int(request.form["index"])
-        format_posts[index] = ( format_posts[index][0], format_posts[index][1], data)
+        format_posts[index] = (format_posts[index][0], format_posts[index][1], data)
         hidden_posts.append(format_posts[index][1].id)
+        buttons[format_posts[index][1].id] = 1
 
         #print(type(format_posts[index][1]))
         # этот ретерн можно не писать
@@ -61,7 +62,7 @@ def index2(db_section):
     #print(format_posts)
 
 
-    return render_template("main.html", format_posts=format_posts,section=db_section,form2=form2)
+    return render_template("main.html", format_posts=format_posts,section=db_section,form2=form2, hidden_posts=hidden_posts)
 
 def main():
     db_session.global_init("db/borda.db")

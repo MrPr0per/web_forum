@@ -1,4 +1,5 @@
 from data import db_session
+from server import buttons
 
 db_session.global_init("db/borda.db")
 db_sess = db_session.create_session()
@@ -41,8 +42,8 @@ def walk_and_show(tree, deep=0):
         return
     for k, v in tree.items():
         # print('\t' * deep, posts[k].title, posts[k].content)
-        if deep == 1:
-            format_posts.append((deep, posts2[k],1))
+        if k in buttons.keys():
+            format_posts.append((deep, posts2[k],buttons[k]))
         else:
             format_posts.append((deep, posts2[k],0))
         #                                       /.\
