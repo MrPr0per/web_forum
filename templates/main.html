@@ -1,16 +1,15 @@
 {% extends "base.html" %}
 {%block content%}
 
-
     {% for deep, post, hidden_button_val in format_posts%}
         {%if deep > 0%}
-            {%set a = 0%}
+            {%set a = namespace(foo=False)%}
             {%for k, v in hidden_posts.items()%}
                 {%if post.id in v%}
-                    {%set a = 1%}
+                    {% set a.foo = True %}
                 {%endif%}
             {%endfor%}
-            {%if a!=1 or deep==1 %}
+            {%if a.foo == False or deep==1 %}
 
                 <div class="col-md6 border rounded">
                     <img src={{post.files}} alt="нет картинки" width="100" style="margin-left: {{100*(deep-1)}}px;">
