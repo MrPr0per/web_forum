@@ -4,13 +4,14 @@ from data import db_session
 db_session.global_init("db/borda.db")
 db_sess = db_session.create_session()
 
-def create_post(section, title,messenge,reply_to_id,file=""):
+def create_post(section, title,messenge,reply_to_id,hidden_posts,file=""):
     from data import posts
     a = getattr(posts, section)
     post = a(title=title, content=messenge, reply_to_id=reply_to_id)
     db_sess.add(post)
     db_sess.commit()
-    pass
+    if reply_to_id in hidden_posts.keys():
+        hidden_posts[reply_to_id].append(post.id)
 
 for post in db_sess.query(b).all():
     db_sess.delete(post)

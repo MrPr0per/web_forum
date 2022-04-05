@@ -5,6 +5,7 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
 from flask import redirect
 from posting import create_post
+from draw_post_tree import get_format_posts, delete_data
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'in_fact_we_are_not_powerless_but_weak-willed__will_will_make_any_choice_right'
 
@@ -38,7 +39,10 @@ def create_messenge(section,id):
         print(form.messenge._value())
         messenge = form.messenge._value()
         title = form.title._value()
-        create_post(section,title,messenge,id)
+        create_post(section,title,messenge,id,hidden_posts)
+
+        # format_posts=get_format_posts(section,buttons)
+        # hide_posts(id,id,format_posts)
         return redirect(f'/{section}')
     return render_template("messenge_form.html", form=form, to_id = id)
 
@@ -54,8 +58,11 @@ def show_posts(begin_id):
 @app.route("/<db_section>" ,methods=['GET', 'POST'])
 def index2(db_section):
     global buttons
-    from draw_post_tree import get_format_posts, delete_data
+
     # if not len(hidden_posts):
+    if db_section=='None':
+        print("flask is stupid shit for dumbasses")
+        return ""
     delete_data()
     format_posts = get_format_posts(db_section,buttons)
     form2 = Close_button()
