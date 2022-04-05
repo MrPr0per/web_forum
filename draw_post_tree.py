@@ -70,8 +70,8 @@ def walk_and_show(tree, buttons,deep=0):
 #     return result
 
 def get_format_posts(db_section,buttons):
-    from data import posts
 
+    from data import posts
     a = getattr(posts,db_section)
     global posts2
     posts2 = {0: a()}

@@ -63,11 +63,11 @@ def index2(db_section):
     if db_section=='None':
         print("flask is stupid shit for dumbasses")
         return ""
+
     delete_data()
     format_posts = get_format_posts(db_section,buttons)
     form2 = Close_button()
     if form2.validate_on_submit():
-        data = int(request.form["data"])
         index= int(request.form["index"])
         if format_posts[index][1].id not in hidden_posts.keys():
             hidden_posts[format_posts[index][1].id] = []
@@ -79,6 +79,9 @@ def index2(db_section):
             format_posts[index] = (format_posts[index][0], format_posts[index][1], 1)
             buttons[format_posts[index][1].id] = 1
             show_posts(format_posts[index][1].id)
+    return render_template("main.html", format_posts=format_posts, section=db_section, form2=form2,
+                               hidden_posts=hidden_posts)
+
 
         #print(type(format_posts[index][1]))
         # этот ретерн можно не писать
@@ -86,7 +89,7 @@ def index2(db_section):
     #print(format_posts)
 
 
-    return render_template("main.html", format_posts=format_posts,section=db_section,form2=form2, hidden_posts=hidden_posts)
+
 
 def main():
     db_session.global_init("db/borda.db")
