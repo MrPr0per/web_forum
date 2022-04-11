@@ -18,9 +18,9 @@ hidden_posts=dict()
 buttons=dict()
 
 class Answer_Form(FlaskForm):
-    title = StringField('введите заголовок', validators=[DataRequired()])
-    messenge = StringField('введите ваше сообщение', validators=[DataRequired()])
-    submit = SubmitField('Войти')
+    # title = StringField('введите заголовок', validators=[DataRequired()])
+    # messenge = StringField('введите ваше сообщение', validators=[DataRequired()])
+    submit = SubmitField('запостить')
 
 class Answer_button(FlaskForm):
     submit = SubmitField('ответить')
@@ -35,10 +35,14 @@ def index():
 @app.route("/messenge_to/<section>/<int:id>",methods=['GET', 'POST'])
 def create_messenge(section,id):
     form = Answer_Form()
+
     if form.validate_on_submit():
-        print(form.messenge._value())
-        messenge = form.messenge._value()
-        title = form.title._value()
+
+        # messenge = form.messenge._value()
+        messenge = request.form["messenge"]
+        title = request.form["title"]
+        # title = form.title._value()
+
         create_post(section,title,messenge,id,hidden_posts)
 
         # format_posts=get_format_posts(section,buttons)
