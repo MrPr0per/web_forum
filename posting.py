@@ -1,5 +1,6 @@
 from data.posts import b,abu #это надо будет стереть
 from data import db_session
+import os
 
 db_session.global_init("db/borda.db")
 db_sess = db_session.create_session()
@@ -7,11 +8,17 @@ db_sess = db_session.create_session()
 def create_post(section, title,messenge,reply_to_id,hidden_posts,file=""):
     from data import posts
     a = getattr(posts, section)
-    post = a(title=title, content=messenge, reply_to_id=reply_to_id)
+    post = a(title=title, content=messenge, reply_to_id=reply_to_id,files=file)
     db_sess.add(post)
     db_sess.commit()
     if reply_to_id in hidden_posts.keys():
         hidden_posts[reply_to_id].append(post.id)
+
+def create_folders(boards,filepath):
+    for i in boards:
+        for j in range(1,len(i)):
+            if not os.path.exists(i[j]):
+                os.mkdir(filepath+i[j])
 
 for post in db_sess.query(b).all():
     db_sess.delete(post)

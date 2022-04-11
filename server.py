@@ -4,18 +4,20 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
 from flask import redirect
-from posting import create_post
+from posting import create_post, create_folders
 from draw_post_tree import get_format_posts, delete_data
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'in_fact_we_are_not_powerless_but_weak-willed__will_will_make_any_choice_right'
 
-boards = [["разное","/abu","/b","/media","/r","soc"],
+boards = [["разное","/abu","/b","/media","/r","/soc"],
           ["тематика","/au","/bi","/biz","/bo","/cc"],
           ["творчество","/de","/di","/diy","/mus","/p","/pa"],
           ["политикка","/hry","/news","/po"]]
 
 hidden_posts=dict()
 buttons=dict()
+
+filepath="static/images/uploads/"
 
 class Answer_Form(FlaskForm):
     # title = StringField('введите заголовок', validators=[DataRequired()])
@@ -30,6 +32,7 @@ class Close_button(FlaskForm):
 
 @app.route("/")
 def index():
+    create_folders(boards,filepath)
     return render_template("home.html", boards = boards)
 
 @app.route("/messenge_to/<section>/<int:id>",methods=['GET', 'POST'])
@@ -41,9 +44,15 @@ def create_messenge(section,id):
         # messenge = form.messenge._value()
         messenge = request.form["messenge"]
         title = request.form["title"]
+        file = request.files["file_upload"]
+        if file:
+            filename=f"{filepath}section/picture{id}.{file.filename.split('.')[1]}"
+            file.save(filename)
+        else:
+            filename=""
         # title = form.title._value()
 
-        create_post(section,title,messenge,id,hidden_posts)
+        create_post(section,title,messenge,id,hidden_posts,filename)
 
         # format_posts=get_format_posts(section,buttons)
         # hide_posts(id,id,format_posts)
