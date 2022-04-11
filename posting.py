@@ -5,10 +5,14 @@ import os
 db_session.global_init("db/borda.db")
 db_sess = db_session.create_session()
 
-def create_post(section, title,messenge,reply_to_id,hidden_posts,file=""):
+def create_post(section, title,messenge,reply_to_id,hidden_posts,file=None):
     from data import posts
     a = getattr(posts, section)
-    post = a(title=title, content=messenge, reply_to_id=reply_to_id,files=file)
+    if file:
+        post = a(title=title, content=messenge, reply_to_id=reply_to_id,files=file)
+    else:
+        post = a(title=title, content=messenge, reply_to_id=reply_to_id)
+
     db_sess.add(post)
     db_sess.commit()
     if reply_to_id in hidden_posts.keys():
