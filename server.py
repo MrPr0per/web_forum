@@ -6,6 +6,7 @@ from wtforms.validators import DataRequired
 from flask import redirect
 from posting import create_post, create_folders
 from draw_post_tree import get_format_posts, delete_data
+import os
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'in_fact_we_are_not_powerless_but_weak-willed__will_will_make_any_choice_right'
 
@@ -74,7 +75,7 @@ def index2(db_section):
 
     # if not len(hidden_posts):
     if db_section=='None':
-        print("flask is stupid shit for dumbasses")
+        #print("flask is stupid shit for dumbasses")
         return ""
 
     delete_data()
@@ -106,8 +107,11 @@ def index2(db_section):
 
 def main():
     db_session.global_init("db/borda.db")
-    app.run(port=8080, host='127.0.0.1')
-
+    # for self
+    # app.run(port=8080, host='127.0.0.1')
+# for internet
+    port = int(os.environ.get("PORT",5000))
+    app.run(port=port, host='0.0.0.0')
 
 if __name__ == '__main__':
     main()
