@@ -22,3 +22,53 @@ class b(SqlAlchemyBase,main_class):
 class abu(SqlAlchemyBase,main_class):
     __tablename__ = '/abu'
 
+class media(SqlAlchemyBase,main_class):
+    __tablename__ = '/media'
+
+class r(SqlAlchemyBase,main_class):
+    __tablename__ = '/r'
+
+class soc(SqlAlchemyBase,main_class):
+    __tablename__ = '/soc'
+
+class au(SqlAlchemyBase,main_class):
+    __tablename__ = '/au'
+
+class bi(SqlAlchemyBase,main_class):
+    __tablename__ = '/bi'
+
+class biz(SqlAlchemyBase,main_class):
+    __tablename__ = '/biz'
+
+class bo(SqlAlchemyBase,main_class):
+    __tablename__ = '/bo'
+
+class cc(SqlAlchemyBase,main_class):
+    __tablename__ = '/cc'
+
+class de(SqlAlchemyBase,main_class):
+    __tablename__ = '/de'
+
+class di(SqlAlchemyBase,main_class):
+    __tablename__ = '/di'
+
+class diy(SqlAlchemyBase,main_class):
+    __tablename__ = '/diy'
+
+class mus(SqlAlchemyBase,main_class):
+    __tablename__ = '/mus'
+
+class p(SqlAlchemyBase,main_class):
+    __tablename__ = '/p'
+
+class pa(SqlAlchemyBase,main_class):
+    __tablename__ = '/pa'
+
+class hry(SqlAlchemyBase,main_class):
+    __tablename__ = '/hry'
+
+class news(SqlAlchemyBase,main_class):
+    __tablename__ = '/news'
+
+class po(SqlAlchemyBase,main_class):
+    __tablename__ = '/po'
