@@ -32,7 +32,7 @@ class Close_button(FlaskForm):
 
 @app.route("/")
 def index():
-    create_folders(boards,filepath)
+    # create_folders(boards,filepath)
     return render_template("home.html", boards = boards)
 
 @app.route("/messenge_to/<section>/<int:id>",methods=['GET', 'POST'])
@@ -46,7 +46,7 @@ def create_messenge(section,id):
         title = request.form["title"]
         file = request.files["file_upload"]
         if file:
-            filename=f"{filepath}section/picture{id}.{file.filename.split('.')[1]}"
+            filename=f"{filepath}{section}/picture{id}.{file.filename.split('.')[1]}"
             file.save(filename)
         else:
             filename=""
