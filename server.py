@@ -7,37 +7,43 @@ from flask import redirect
 from posting import create_post, create_folders
 from draw_post_tree import get_format_posts, delete_data
 import os
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'in_fact_we_are_not_powerless_but_weak-willed__will_will_make_any_choice_right'
 
-boards = [["разное","/abu","/b","/media","/r","/soc"],
-          ["тематика","/au","/bi","/biz","/bo","/cc"],
-          ["творчество","/de","/di","/diy","/mus","/p","/pa"],
-          ["политикка","/hry","/news","/po"]]
+boards = [["разное", "/abu", "/b", "/media", "/r", "/soc"],
+          ["тематика", "/au", "/bi", "/biz", "/bo", "/cc"],
+          ["творчество", "/de", "/di", "/diy", "/mus", "/p", "/pa"],
+          ["политикка", "/hry", "/news", "/po"]]
 
-hidden_posts=dict()
-buttons=dict()
+hidden_posts = dict()
+buttons = dict()
 
-filepath="static/images/uploads/"
+filepath = "static/images/uploads/"
+
 
 class Answer_Form(FlaskForm):
     # title = StringField('введите заголовок', validators=[DataRequired()])
     # messenge = StringField('введите ваше сообщение', validators=[DataRequired()])
     submit = SubmitField('запостить')
 
+
 class Answer_button(FlaskForm):
     submit = SubmitField('ответить')
+
 
 class Close_button(FlaskForm):
     submit2 = SubmitField('скрыть/открыть ответы')
 
+
 @app.route("/")
 def index():
     # create_folders(boards,filepath)
-    return render_template("home.html", boards = boards)
+    return render_template("home.html", boards=boards)
 
-@app.route("/messenge_to/<section>/<int:id>",methods=['GET', 'POST'])
-def create_messenge(section,id):
+
+@app.route("/messenge_to/<section>/<int:id>", methods=['GET', 'POST'])
+def create_messenge(section, id):
     form = Answer_Form()
 
     if form.validate_on_submit():
@@ -47,72 +53,74 @@ def create_messenge(section,id):
         title = request.form["title"]
         file = request.files["file_upload"]
         if file:
-            filename=f"{filepath}{section}/picture{id}.{file.filename.split('.')[1]}"
+            filename = f"{filepath}{section}/picture{id}.{file.filename.split('.')[1]}"
             file.save(filename)
         else:
-            filename=""
+            filename = ""
             print("aboba")
         # title = form.title._value()
 
-        create_post(section,title,messenge,id,hidden_posts,filename)
+        create_post(section, title, messenge, id, hidden_posts, filename)
 
         # format_posts=get_format_posts(section,buttons)
         # hide_posts(id,id,format_posts)
         return redirect(f'/{section}')
-    return render_template("messenge_form.html", form=form, to_id = id)
+    return render_template("messenge_form.html", form=form, to_id=id)
 
-def hide_posts(beggin_beggin_id,begin_id, posts):
+
+def hide_posts(beggin_beggin_id, begin_id, posts):
     for i in posts:
         if i[1].reply_to_id == begin_id:
             hidden_posts[beggin_beggin_id].append(i[1].id)
             hide_posts(beggin_beggin_id, i[1].id, posts)
     pass
-def show_posts(begin_id):
-    del(hidden_posts[begin_id])
 
-@app.route("/<db_section>" ,methods=['GET', 'POST'])
+
+def show_posts(begin_id):
+    del (hidden_posts[begin_id])
+
+
+@app.route("/<db_section>", methods=['GET', 'POST'])
 def index2(db_section):
     global buttons
 
     # if not len(hidden_posts):
-    if db_section=='None':
-        #print("flask is stupid shit for dumbasses")
+    if db_section == 'None':
+        # print("flask is stupid shit for dumbasses")
         return ""
 
     delete_data()
-    format_posts = get_format_posts(db_section,buttons)
+    format_posts = get_format_posts(db_section, buttons)
     form2 = Close_button()
     if form2.validate_on_submit():
-        index= int(request.form["index"])
+        index = int(request.form["index"])
         if format_posts[index][1].id not in hidden_posts.keys():
             hidden_posts[format_posts[index][1].id] = []
             format_posts[index] = (format_posts[index][0], format_posts[index][1], 2)
-            #hidden_posts.append(format_posts[index][1].id)
+            # hidden_posts.append(format_posts[index][1].id)
             buttons[format_posts[index][1].id] = 2
-            hide_posts(format_posts[index][1].id,format_posts[index][1].id, format_posts)
+            hide_posts(format_posts[index][1].id, format_posts[index][1].id, format_posts)
         else:
             format_posts[index] = (format_posts[index][0], format_posts[index][1], 1)
             buttons[format_posts[index][1].id] = 1
             show_posts(format_posts[index][1].id)
     return render_template("main.html", format_posts=format_posts, section=db_section, form2=form2,
-                               hidden_posts=hidden_posts)
+                           hidden_posts=hidden_posts)
 
-
-        #print(type(format_posts[index][1]))
-        # этот ретерн можно не писать
-        # return redirect(f'/messenge_to/{db_section}/{id}')
-    #print(format_posts)
-
-
+    # print(type(format_posts[index][1]))
+    # этот ретерн можно не писать
+    # return redirect(f'/messenge_to/{db_section}/{id}')
+    # print(format_posts)
 
 
 def main():
     db_session.global_init("db/borda.db")
     # for self
-    #app.run(port=8080, host='127.0.0.1')
-# for internet
-    port = int(os.environ.get("PORT",5000))
-    app.run(port=port, host='0.0.0.0')
+    # app.run(port=8080, host='127.0.0.1')
+    # for internet
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
+
 
 if __name__ == '__main__':
     main()
