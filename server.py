@@ -43,7 +43,7 @@ def index():
 
 
 @app.route("/messenge_to/<section>/<int:id>", methods=['GET', 'POST'])
-def create_messenge(section, id):
+def create_messenge(section, reply_to_id):
     form = Answer_Form()
 
     if form.validate_on_submit():
@@ -52,6 +52,7 @@ def create_messenge(section, id):
         messenge = request.form["messenge"]
         title = request.form["title"]
         file = request.files["file_upload"]
+        id = len(get_format_posts(section, buttons))
         if file:
             filename = f"{filepath}{section}/picture{id}.{file.filename.split('.')[1]}"
             file.save(filename)
@@ -60,12 +61,12 @@ def create_messenge(section, id):
             print("aboba")
         # title = form.title._value()
 
-        create_post(section, title, messenge, id, hidden_posts, filename)
+        create_post(section, title, messenge, reply_to_id, hidden_posts, filename)
 
         # format_posts=get_format_posts(section,buttons)
         # hide_posts(id,id,format_posts)
         return redirect(f'/{section}')
-    return render_template("messenge_form.html", form=form, to_id=id)
+    return render_template("messenge_form.html", form=form, to_id=reply_to_id)
 
 
 def hide_posts(beggin_beggin_id, begin_id, posts):
