@@ -11,8 +11,8 @@ import os
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'in_fact_we_are_not_powerless_but_weak-willed__will_will_make_any_choice_right'
 
-app.config['RECAPTHCA_PUBLIC_KEY']='6Leg6HMfAAAAACYotHYSQXjPQdhRCdHDoIfsd_br'
-app.config['RECAPTHCA_PRIVATE_KEY']='6Leg6HMfAAAAAF0MjyD9vd1H392fpAqJzshcTaBE'
+app.config['RECAPTCHA_PRIVATE_KEY']='6Leg6HMfAAAAAF0MjyD9vd1H392fpAqJzshcTaBE'
+app.config['RECAPTCHA_PUBLIC_KEY']='6Leg6HMfAAAAACYotHYSQXjPQdhRCdHDoIfsd_br'
 
 boards = [["разное", "/abu", "/b", "/media", "/r", "/soc"],
           ["тематика", "/au", "/bi", "/biz", "/bo", "/cc"],
