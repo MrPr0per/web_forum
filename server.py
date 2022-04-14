@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 from data import db_session
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
 from flask import redirect
@@ -10,6 +10,9 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'in_fact_we_are_not_powerless_but_weak-willed__will_will_make_any_choice_right'
+
+app.config['RECAPTHCA_PUBLIC_KEY']='6Leg6HMfAAAAACYotHYSQXjPQdhRCdHDoIfsd_br'
+app.config['RECAPTHCA_PRIVATE_KEY']='6Leg6HMfAAAAAF0MjyD9vd1H392fpAqJzshcTaBE'
 
 boards = [["разное", "/abu", "/b", "/media", "/r", "/soc"],
           ["тематика", "/au", "/bi", "/biz", "/bo", "/cc"],
@@ -25,10 +28,12 @@ filepath = "static/images/uploads/"
 class Answer_Form(FlaskForm):
     # title = StringField('введите заголовок', validators=[DataRequired()])
     # messenge = StringField('введите ваше сообщение', validators=[DataRequired()])
+    recaptcha = RecaptchaField()
     submit = SubmitField('запостить')
 
 
 class Answer_button(FlaskForm):
+
     submit = SubmitField('ответить')
 
 
@@ -117,11 +122,11 @@ def index2(db_section):
 def main():
     db_session.global_init("db/borda.db")
     # for self
-    #app.run(port=8080, host='127.0.0.1')
+    app.run(port=8080, host='127.0.0.1')
     # for internet
     #
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    #port = int(os.environ.get("PORT", 5000))
+    #app.run(host='0.0.0.0', port=port)
 
 
 if __name__ == '__main__':
