@@ -28,7 +28,7 @@ filepath = "static/images/uploads/"
 class Answer_Form(FlaskForm):
     # title = StringField('введите заголовок', validators=[DataRequired()])
     # messenge = StringField('введите ваше сообщение', validators=[DataRequired()])
-    #recaptcha = RecaptchaField()
+    recaptcha = RecaptchaField()
     submit = SubmitField('запостить')
 
 
@@ -146,11 +146,11 @@ def index2(db_section):
 def main():
     db_session.global_init("db/borda.db")
     # for self
-    app.run(port=8080, host='127.0.0.1')
+    #app.run(port=8080, host='127.0.0.1')
     # for internet
     #
-    #port = int(os.environ.get("PORT", 5000))
-    #app.run(host='0.0.0.0', port=port)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
 
 
 if __name__ == '__main__':
