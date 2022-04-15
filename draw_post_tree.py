@@ -85,4 +85,4 @@ def get_format_posts(db_section,buttons):
         # for i in format_posts:
         #     print(i)
 
-    return format_posts[::-1]
+    return format_posts

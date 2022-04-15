@@ -28,7 +28,7 @@ filepath = "static/images/uploads/"
 class Answer_Form(FlaskForm):
     # title = StringField('введите заголовок', validators=[DataRequired()])
     # messenge = StringField('введите ваше сообщение', validators=[DataRequired()])
-    recaptcha = RecaptchaField()
+    #recaptcha = RecaptchaField()
     submit = SubmitField('запостить')
 
 
@@ -88,7 +88,7 @@ def show_posts(begin_id):
 
 @app.route("/<db_section>", methods=['GET', 'POST'])
 def index2(db_section):
-    global buttons
+    global buttons,counter
 
     # if not len(hidden_posts):
     if db_section == 'None':
@@ -96,14 +96,30 @@ def index2(db_section):
         return ""
 
     delete_data()
-    format_posts = get_format_posts(db_section, buttons)
-    format_posts_zero_lvl = []
+    format_posts = get_format_posts(db_section, buttons)[::-1]
+
+    i = 0
+    post_pos = 0
+    zero_pos=[]
+    # сортировка постов, чтобы ответы были под постами
+    # сначала заголовки
+    while i<len(format_posts):
+        if format_posts[i][1].reply_to_id == 0:
+            if i!=post_pos:
+                format_posts.insert(post_pos, format_posts[i])
+                del (format_posts[i + 1])
+            post_pos=i+1
+
+        i+=1
+    # теперь сами посты
     for i in range(len(format_posts)):
-        if format_posts[i][1].reply_to_id ==0:
-            format_posts_zero_lvl.append(i)
-    for i in range(len(format_posts_zero_lvl)):
-        format_posts[format_posts_zero_lvl[i]], format_posts[format_posts_zero_lvl[len(format_posts_zero_lvl)-i]] = \
-            format_posts[format_posts_zero_lvl[len(format_posts_zero_lvl)-i]], format_posts[format_posts_zero_lvl[i]]
+        if format_posts[i][1].reply_to_id == 0:
+            zero_pos.append(i)
+    zero_pos.append(len(format_posts)-1)
+    for i in range(len(zero_pos)-1):
+        print(format_posts[zero_pos[i]+1:zero_pos[i+1]][::-1])
+        format_posts[zero_pos[i]+1:zero_pos[i+1]] =format_posts[zero_pos[i]+1:zero_pos[i+1]][::-1]
+
     form2 = Close_button()
     if form2.validate_on_submit():
         index = int(request.form["index"])
@@ -117,6 +133,7 @@ def index2(db_section):
             format_posts[index] = (format_posts[index][0], format_posts[index][1], 1)
             buttons[format_posts[index][1].id] = 1
             show_posts(format_posts[index][1].id)
+    print(format_posts)
     return render_template("main.html", format_posts=format_posts, section=db_section, form2=form2,
                            hidden_posts=hidden_posts)
 
@@ -129,11 +146,11 @@ def index2(db_section):
 def main():
     db_session.global_init("db/borda.db")
     # for self
-    #app.run(port=8080, host='127.0.0.1')
+    app.run(port=8080, host='127.0.0.1')
     # for internet
     #
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    #port = int(os.environ.get("PORT", 5000))
+    #app.run(host='0.0.0.0', port=port)
 
 
 if __name__ == '__main__':
