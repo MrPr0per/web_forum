@@ -97,6 +97,13 @@ def index2(db_section):
 
     delete_data()
     format_posts = get_format_posts(db_section, buttons)
+    format_posts_zero_lvl = []
+    for i in range(len(format_posts)):
+        if format_posts[i][1].reply_to_id ==0:
+            format_posts_zero_lvl.append(i)
+    for i in range(len(format_posts_zero_lvl)):
+        format_posts[format_posts_zero_lvl[i]], format_posts[format_posts_zero_lvl[len(format_posts_zero_lvl)-i]] = \
+            format_posts[format_posts_zero_lvl[len(format_posts_zero_lvl)-i]], format_posts[format_posts_zero_lvl[i]]
     form2 = Close_button()
     if form2.validate_on_submit():
         index = int(request.form["index"])
