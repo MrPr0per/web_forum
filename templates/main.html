@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {%block content%}
-
+    <form action="messenge_to/{{section}}/0" method="post">
+        <button type="submit" class="position_center borders">написать пост</button>
+    </form>
     {% for deep, post, hidden_button_val in format_posts%}
         {%if deep > 0%}
             {%set a = namespace(foo=False)%}
@@ -37,11 +39,7 @@
                 </div>
                 {%endif%}
             {%endif%}
-        {%else%}
-            <form action="messenge_to/{{section}}/0" method="post">
-                <button style="margin-left: {{100 * (deep-1)}}px;" type="submit" class="position_center borders">написать пост</button>
-            </form>
-
         {%endif%}
+
     {% endfor %}
 {%endblock%}
