@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request
 
-
 from data import db_session
 from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, EmailField, TextAreaField
@@ -36,6 +35,9 @@ def load_user(user_id):
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
 
+class bless_form(FlaskForm):
+    submit = SubmitField('благославить пост')
+
 class LoginForm(FlaskForm):
     nickname = StringField('ваш никнэйм', validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
@@ -51,7 +53,7 @@ class RegisterForm(FlaskForm):
 class Answer_Form(FlaskForm):
     # title = StringField('введите заголовок', validators=[DataRequired()])
     # messenge = StringField('введите ваше сообщение', validators=[DataRequired()])
-    recaptcha = RecaptchaField()
+    #recaptcha = RecaptchaField()
     submit = SubmitField('запостить')
 
 
@@ -185,21 +187,43 @@ def index2(db_section):
         format_posts[zero_pos[i]+1:zero_pos[i+1]] =format_posts[zero_pos[i]+1:zero_pos[i+1]][::-1]
 
     form2 = Close_button()
+    bless = bless_form()
+    if bless.validate_on_submit():
+        try:
+            index = int(request.form["index2"])
+            name = request.form["name"]
+
+            from data import posts
+            Posts = getattr(posts, db_section)
+            db_sess = db_session.create_session()
+            for i in db_sess.query(Posts).filter(Posts.id == index):
+                post = i
+            print(index)
+            if post.blessing != None:
+                post.blessing = post.blessing +" "+name
+            else:
+                post.blessing = name
+            db_sess.commit()
+        except:
+            pass
+
     if form2.validate_on_submit():
-        index = int(request.form["index"])
-        if format_posts[index][1].id not in hidden_posts.keys():
-            hidden_posts[format_posts[index][1].id] = []
-            format_posts[index] = (format_posts[index][0], format_posts[index][1], 2)
-            # hidden_posts.append(format_posts[index][1].id)
-            buttons[format_posts[index][1].id] = 2
-            hide_posts(format_posts[index][1].id, format_posts[index][1].id, format_posts)
-        else:
-            format_posts[index] = (format_posts[index][0], format_posts[index][1], 1)
-            buttons[format_posts[index][1].id] = 1
-            show_posts(format_posts[index][1].id)
-    print(format_posts)
+        try:
+            index = int(request.form["index"])
+            if format_posts[index][1].id not in hidden_posts.keys():
+                hidden_posts[format_posts[index][1].id] = []
+                format_posts[index] = (format_posts[index][0], format_posts[index][1], 2)
+                # hidden_posts.append(format_posts[index][1].id)
+                buttons[format_posts[index][1].id] = 2
+                hide_posts(format_posts[index][1].id, format_posts[index][1].id, format_posts)
+            else:
+                format_posts[index] = (format_posts[index][0], format_posts[index][1], 1)
+                buttons[format_posts[index][1].id] = 1
+                show_posts(format_posts[index][1].id)
+        except:
+            pass
     return render_template("main.html", format_posts=format_posts, section=db_section, form2=form2,
-                           hidden_posts=hidden_posts)
+                           hidden_posts=hidden_posts, bless=bless)
 
     # print(type(format_posts[index][1]))
     # этот ретерн можно не писать

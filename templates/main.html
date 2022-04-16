@@ -19,6 +19,12 @@
                     <div style="margin-left: {{100 * (deep-1)}}px;">
                         {{post.content}}
                     </div>
+                    <div style="color:red;">
+                        {%if post.blessing%}
+                            пост благославлен следующими модераторами:
+                            {{post.blessing}}
+                        {%endif%}
+                    </div>
                     <form action="messenge_to/{{section}}/{{post.id}}" method="post">
                         <button style="margin-left: {{100 * (deep-1)}}px;" type="submit" class="position_center borders">ответить</button>
                     </form>
@@ -37,6 +43,20 @@
                         <div><input type="hidden" name="index" value="{{loop['index0']}}"></div>
                     </form>
                 </div>
+                {%endif%}
+                {% if current_user.is_authenticated %}
+                    <form action="" method="post" novalidate>
+                        <div>
+                            {{ form2.csrf_token }}
+                        </div>
+                        {% for field in bless if field.name != 'csrf_token' %}
+                            <div style="margin-left: {{100 * (deep-1)}}px;">
+                                {{ field() }}
+                            </div>
+                        {% endfor %}
+                        <div><input type="hidden" name="name" value={{current_user.nickname}}></div>
+                        <div><input type="hidden" name="index2" value={{post.id}}></div>
+                    </form>
                 {%endif%}
             {%endif%}
         {%endif%}
