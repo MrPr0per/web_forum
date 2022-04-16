@@ -1,12 +1,16 @@
 from flask import Flask, render_template, request
+
+
 from data import db_session
 from flask_wtf import FlaskForm, RecaptchaField
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, EmailField, TextAreaField
 from wtforms.validators import DataRequired
 from flask import redirect
 from posting import create_post, create_folders
 from draw_post_tree import get_format_posts, delete_data
 import os
+from flask_login import LoginManager, login_user, logout_user, login_required
+from data.posts import User
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'in_fact_we_are_not_powerless_but_weak-willed__will_will_make_any_choice_right'
@@ -24,6 +28,25 @@ buttons = dict()
 
 filepath = "static/images/uploads/"
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    db_sess = db_session.create_session()
+    return db_sess.query(User).get(user_id)
+
+class LoginForm(FlaskForm):
+    nickname = StringField('ваш никнэйм', validators=[DataRequired()])
+    password = PasswordField('Пароль', validators=[DataRequired()])
+    remember_me = BooleanField('Запомнить меня')
+    submit = SubmitField('Войти')
+
+class RegisterForm(FlaskForm):
+    nickname = StringField('ваш никнэйм', validators=[DataRequired()])
+    password = PasswordField('Пароль', validators=[DataRequired()])
+    password_again = PasswordField('Повторите пароль', validators=[DataRequired()])
+    submit = SubmitField('Войти')
 
 class Answer_Form(FlaskForm):
     # title = StringField('введите заголовок', validators=[DataRequired()])
@@ -46,6 +69,47 @@ def index():
     # create_folders(boards,filepath)
     return render_template("home.html", boards=boards)
 
+@app.route('/register', methods=['GET', 'POST'])
+def reqister():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        if form.password.data != form.password_again.data:
+            return render_template('register.html', title='Регистрация',
+                                   form=form,
+                                   message="Пароли не совпадают")
+        db_sess = db_session.create_session()
+        if db_sess.query(User).filter(User.nickname == form.nickname.data).first():
+            return render_template('register.html', title='Регистрация',
+                                   form=form,
+                                   message="Такой пользователь уже есть")
+        user = User()
+        user.nickname=form.nickname.data
+        user.set_password(form.password.data)
+        user.verifyed=False
+        db_sess.add(user)
+        db_sess.commit()
+        return redirect('/login')
+    return render_template('registration.html', title='Регистрация', form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.nickname == form.nickname.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+            return redirect("/")
+        return render_template('login.html',
+                               message="Неправильный логин или пароль",
+                               form=form)
+    return render_template('login.html', title='Авторизация', form=form)
 
 @app.route("/messenge_to/<section>/<int:reply_to_id>", methods=['GET', 'POST'])
 def create_messenge(section, reply_to_id):

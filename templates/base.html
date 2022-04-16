@@ -8,7 +8,19 @@
 </head>
 <body style="background-color:#a0b3c6b3;">
     <a href="./"><h1>3ch.af</h1></a>
+    {% if current_user.is_authenticated %}
+    <div>
+        вы вошли под именем
+        <a class="navbar-brand" href="/logout">{{ current_user.nickname }}</a>
+        нажмите, чтобы разлогиниться
+    </div>
 
+    {% else %}
+        <p>
+            <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
+            <a class="btn btn-success" href="/login">Войти</a>
+        </p>
+    {% endif %}
     <main role="main" class="container">
         {% block content %}{% endblock %}
     </main>
