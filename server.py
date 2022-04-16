@@ -53,7 +53,7 @@ class RegisterForm(FlaskForm):
 class Answer_Form(FlaskForm):
     # title = StringField('введите заголовок', validators=[DataRequired()])
     # messenge = StringField('введите ваше сообщение', validators=[DataRequired()])
-    #recaptcha = RecaptchaField()
+    recaptcha = RecaptchaField()
     submit = SubmitField('запостить')
 
 
@@ -162,6 +162,26 @@ def index2(db_section):
         return ""
 
     delete_data()
+    bless = bless_form()
+    if bless.validate_on_submit():
+        try:
+            index = int(request.form["index2"])
+            name = request.form["name"]
+
+            from data import posts
+            Posts = getattr(posts, db_section)
+            db_sess = db_session.create_session()
+            for i in db_sess.query(Posts).filter(Posts.id == index):
+                post = i
+            if post.blessing != None:
+                post.blessing = post.blessing + name
+            else:
+                post.blessing = name + " "
+            db_sess.commit()
+
+        except:
+            pass
+
     format_posts = get_format_posts(db_section, buttons)[::-1]
 
     i = 0
@@ -187,25 +207,8 @@ def index2(db_section):
         format_posts[zero_pos[i]+1:zero_pos[i+1]] =format_posts[zero_pos[i]+1:zero_pos[i+1]][::-1]
 
     form2 = Close_button()
-    bless = bless_form()
-    if bless.validate_on_submit():
-        try:
-            index = int(request.form["index2"])
-            name = request.form["name"]
 
-            from data import posts
-            Posts = getattr(posts, db_section)
-            db_sess = db_session.create_session()
-            for i in db_sess.query(Posts).filter(Posts.id == index):
-                post = i
-            print(index)
-            if post.blessing != None:
-                post.blessing = post.blessing +" "+name
-            else:
-                post.blessing = name
-            db_sess.commit()
-        except:
-            pass
+
 
     if form2.validate_on_submit():
         try:
