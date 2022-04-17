@@ -10,7 +10,8 @@ from draw_post_tree import get_format_posts, delete_data
 import os
 from flask_login import LoginManager, login_user, logout_user, login_required
 from data.posts import User
-
+import random
+from pathlib import Path
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'in_fact_we_are_not_powerless_but_weak-willed__will_will_make_any_choice_right'
 
@@ -69,7 +70,24 @@ class Close_button(FlaskForm):
 @app.route("/")
 def index():
     # create_folders(boards,filepath)
-    return render_template("home.html", boards=boards)
+    folder = Path("static/images/main_gifs")
+    max_folder_id = len(list(folder.iterdir()))-1
+    gifs_ids = []
+    i = 0
+    while i < 4:
+        number = random.randint(0,max_folder_id)
+        if number not in gifs_ids:
+            gifs_ids.append(number)
+            i+=1
+    gifs_ids2 = []
+    i = 0
+    while i < 4:
+        number = random.randint(0, max_folder_id)
+        if number not in gifs_ids2 and number not in gifs_ids:
+            gifs_ids2.append(number)
+            i += 1
+
+    return render_template("home.html", boards=boards,gifs_ids=gifs_ids,gifs_ids2=gifs_ids2)
 
 @app.route('/register', methods=['GET', 'POST'])
 def reqister():
@@ -237,11 +255,11 @@ def index2(db_section):
 def main():
     db_session.global_init("db/borda.db")
     # for self
-    #app.run(port=8080, host='127.0.0.1')
+    app.run(port=8080, host='127.0.0.1')
     # for internet
     #
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    #port = int(os.environ.get("PORT", 5000))
+    #app.run(host='0.0.0.0', port=port)
 
 
 if __name__ == '__main__':
