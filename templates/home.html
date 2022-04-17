@@ -2,9 +2,18 @@
 {%block content%}
 
 <main role="main" class="container">
-    {%for i in gifs_ids%}
-    <img src=static/images/main_gifs/anonymus{{i}}.gif alt="нет_картинки" width="300" height="300" >
-    {%endfor%}
+     <div>
+     <h1>welcome to the internet, welcome home</h1>
+
+     <img src=static/images/venus.gif alt="нет_картинки" width="600" height="600" >
+     <img src=static/images/computer.gif alt="нет_картинки" width="600" height="600" >
+
+    </div>
+    <div>
+        {%for i in gifs_ids%}
+            <img src=static/images/main_gifs/anonymus{{i}}.gif alt="нет_картинки" width="300" height="300" >
+        {%endfor%}
+    </div>
     <div class="container">
         {%for j in boards%}
         <div class = "row">
