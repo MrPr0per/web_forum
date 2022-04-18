@@ -19,9 +19,9 @@ def walk(tree, deep=0):
     if len(tree.keys()) == 0:
         return
     for k, v in tree.items():
-        print('\t' * deep, k, ': {', sep='')
+        # print('\t' * deep, k, ': {', sep='')
         walk(v, deep=deep + 1)
-        print('\t' * deep, '}')
+        # print('\t' * deep, '}')
     return
 
 
