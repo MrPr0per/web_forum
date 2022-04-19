@@ -19,8 +19,8 @@ from threading import Timer
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'in_fact_we_are_not_powerless_but_weak-willed__will_will_make_any_choice_right'
 
-app.config['RECAPTCHA_PRIVATE_KEY'] = '6LdPC3QfAAAAABpgXUnvcK227dFlvuSV6PTEu1Xi'
-app.config['RECAPTCHA_PUBLIC_KEY'] = '6LdPC3QfAAAAAEHbsUF52N5sb8ez2R6PwaILBH7_'
+app.config['RECAPTCHA_PRIVATE_KEY'] = '6LfrPIEfAAAAAN1AhaD6c19E7kJzP2ylCtsYeg9X'
+app.config['RECAPTCHA_PUBLIC_KEY'] = '6LfrPIEfAAAAAI6JhObHV61OybpGyk62mrJ2oqK4'
 
 boards = [["разное", "/abu", "/b", "/media", "/r", "/soc"],
           ["тематика", "/au", "/bi", "/biz", "/bo", "/cc"],
