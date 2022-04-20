@@ -18,6 +18,7 @@
     {% for deep, post, hidden_button_val, reply_list in format_posts_with_reply %}
         {% if deep == 1 %}
             <div style="margin-left: {{100 * (deep-1)}}px;" class="card card-body post">
+                <p>{{post.created_date}}</p>
                 {% if post.files != None %}
                 <a href="{{post.files}}" target="_blank"><img src={{post.files}} alt="нет_картинки" width="150"></a>
                 {% endif %}
@@ -32,33 +33,34 @@
                     {%endif%}
                 </div>
                 <form action="messenge_to/{{section}}/{{post.id}}" method="post">
-                    <button type="submit" class="position_center borders">ответить</button>
+                    <button type="submit" class="btn btn-primary">ответить</button>
                 </form>
                 <p>
-                  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample{{loop.index}}" aria-expanded="false" aria-controls="collapseExample">
+                  <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample{{loop.index}}" aria-expanded="false" aria-controls="collapseExample">
                     скрыть/открыть ответы
                   </button>
                 </p>
-                <div class="collapse" id="collapseExample{{loop.index}}">
-                    {% for reply_id in reply_list %}
-                        {% set r_deep, r_post, r_hidden_button_val, r_reply_list = format_posts_with_reply[reply_id] %}
-                        <div style="margin-left: {{100 * (r_deep-1)}}px;" class="card card-body post">
-                                {% if r_post.files != None %}
-                                <a href="{{r_post.files}}" target="_blank"><img src={{r_post.files}} alt="нет_картинки" width="150"></a>
-                                {% endif %}
-                                <h2>{{r_post.title}}</h2>
-                                <div>{{r_post.content}}</div>
-                                <div style="color:red;">
-                                    {%if r_post.blessing%}
-                                        пост благославлен следующими модераторами: {{r_post.blessing}}
-                                    {%endif%}
-                                </div>
-                                <form action="messenge_to/{{section}}/{{r_post.id}}" method="post">
-                                    <button type="submit" class="position_center borders">ответить</button>
-                                </form>
+            </div>
+            <div class="collapse show" id="collapseExample{{loop.index}}">
+                {% for reply_id in reply_list %}
+                    {% set r_deep, r_post, r_hidden_button_val, r_reply_list = format_posts_with_reply[reply_id] %}
+                    <div style="margin-left: {{100 * (r_deep-1)}}px;" class="card card-body post">
+                        <p>{{post.created_date}}</p>
+                        {% if r_post.files != None %}
+                        <a href="{{r_post.files}}" target="_blank"><img src={{r_post.files}} alt="нет_картинки" width="150"></a>
+                        {% endif %}
+                        <h2>{{r_post.title}}</h2>
+                        <div>{{r_post.content}}</div>
+                        <div style="color:red;">
+                            {%if r_post.blessing%}
+                                пост благославлен следующими модераторами: {{r_post.blessing}}
+                            {%endif%}
                         </div>
-                    {% endfor %}
-                </div>
+                        <form action="messenge_to/{{section}}/{{r_post.id}}" method="post">
+                            <button type="submit" class="btn btn-primary">ответить</button>
+                        </form>
+                    </div>
+                {% endfor %}
             </div>
         {% endif %}
     {% endfor %}
