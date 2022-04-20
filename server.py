@@ -37,14 +37,13 @@ login_manager.init_app(app)
 
 ycloud_manager = yadisk.YaDisk(token="AQAAAABgRHWRAAfWz0e6ldvRxkQerikLrbA9aG8")
 
-update_time = 5 * 60  # промежуток времени в секундах, через который делается проверка бд на актуальность
+update_time = int(15 * 60)  # промежуток времени в секундах, через который делается проверка бд на актуальность
 db_is_outdated = False  # флаг, является ли бд в облаке устаревшей
 timer_is_sleep = False  # флаг, заснул ли таймер
-
-
 # он засыпает, когда никто ничего не постит в течение update_time
 # он работает, когда есть хоть 1 пост в течение update_time
 # он просыпается, когда появился пост после того, как таймер заснул
+enable_imagecloud_logs = True
 
 
 @login_manager.user_loader
@@ -183,7 +182,9 @@ def create_messenge(section, reply_to_id):
 
         db_is_outdated = True
         if timer_is_sleep:
-            check_bd()
+            timer_is_sleep = False
+            t = Timer(update_time, check_bd)
+            t.start()
 
         return redirect(f'/{section}')
     return render_template("messenge_form.html", form=form, to_id=reply_to_id)
@@ -281,15 +282,70 @@ def index2(db_section):
     # print(format_posts)
 
 
+def upload_dir(path, to_dir, deep=0):
+    if deep == 0:
+        if enable_imagecloud_logs:
+            print('загрузка картинок на облако...')
+        if not ycloud_manager.exists(to_dir):
+            ycloud_manager.mkdir(to_dir)
+    for obj in os.listdir(path=path):
+        local_obj_path = path + '/' + obj
+        cloud_obj_path = to_dir + '/' + obj
+        if '.' not in obj:
+            if enable_imagecloud_logs:
+                print('\t' * deep + obj + '/')
+            if not ycloud_manager.exists(cloud_obj_path):
+                ycloud_manager.mkdir(cloud_obj_path)
+            upload_dir(path=local_obj_path, to_dir=cloud_obj_path, deep=deep + 1)
+        elif '.' in obj:
+            if enable_imagecloud_logs:
+                print('\t' * deep + obj)
+            if not ycloud_manager.exists(cloud_obj_path):
+                ycloud_manager.upload(local_obj_path, cloud_obj_path)
+    if deep == 0:
+        if enable_imagecloud_logs:
+            print('загрузка картинок на облако завершена')
+
+
+def download_dir(path, to_dir, deep=0):
+    if deep == 0:
+        if enable_imagecloud_logs:
+            print('загрузка картинок из облака...')
+        if not os.path.exists(to_dir):
+            os.mkdir(to_dir)
+
+    for obj in ycloud_manager.listdir(path=path):
+        cloud_obj_path = path + '/' + obj.name
+        local_obj_path = to_dir + '/' + obj.name
+        if obj.type == 'dir':
+            if enable_imagecloud_logs:
+                print('\t' * deep + obj.name + '/')
+            if not os.path.exists(local_obj_path):
+                os.mkdir(local_obj_path)
+            download_dir(path=cloud_obj_path, to_dir=local_obj_path, deep=deep + 1)
+        elif obj.type == 'file':
+            if enable_imagecloud_logs:
+                print('\t' * deep + obj.name)
+            if not os.path.exists(local_obj_path):
+                ycloud_manager.download(cloud_obj_path, local_obj_path)
+    if deep == 0:
+        if enable_imagecloud_logs:
+            print('загрузка картинок из облака завершена')
+
+
 def download_bd():
     ycloud_manager.download("/cloud/borda.db", "db/borda.db")
+    download_dir('cloud/images', 'static/images/uploads')
 
 
 def upload_bd():
-    print('произошло обновление')
+    if enable_imagecloud_logs:
+        print('произошло обновление')
     if ycloud_manager.exists('/cloud/borda.db'):
         ycloud_manager.remove("/cloud/borda.db", permanently=True)
     ycloud_manager.upload("db/borda.db", "/cloud/borda.db")
+
+    upload_dir('static/images/uploads', 'cloud/images')
 
 
 def check_bd():
