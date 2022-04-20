@@ -80,7 +80,7 @@ def get_format_posts(db_section, buttons):
         # print(tree)
         walk_and_show(tree, buttons)
 
-        # for i in format_posts:
-        #     print(i)
+    # for i in format_posts:
+    #     print(i)
 
     return format_posts

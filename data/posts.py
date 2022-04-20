@@ -28,7 +28,15 @@ class main_class():
     blessing = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     def __repr__(self):
-        return f'{self.id}: (to {self.reply_to_id}) {self.title}\t{self.content}'
+        title = str(self.title)
+        content = str(self.content)
+        max_len = 20
+        if len(title) > max_len:
+            title = title[:max_len-3] + '...'
+        if len(content) > max_len:
+            content = content[:max_len-3] + '...'
+
+        return f'Post(id={self.id}, reply_to_id={self.reply_to_id}, title={title}, content={content})'
 
 class b(SqlAlchemyBase,main_class):
     __tablename__ = '/b'

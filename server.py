@@ -265,6 +265,21 @@ def index2(db_section):
         # print(format_posts[zero_pos[i] + 1:zero_pos[i + 1]][::-1])
         format_posts[zero_pos[i] + 1:zero_pos[i + 1]] = format_posts[zero_pos[i] + 1:zero_pos[i + 1]][::-1]
 
+    # ооо сейчас будут говнокостыли: структура поста будет переделана
+    # из    (отступ, пост, переменная_отвечающая_за_скрытие)
+    # в     [отступ, пост, переменная_отвечающая_за_скрытие, список_id_постов-ответов]
+    # апдейт: после этого преобразования все слетело нахуй, так что будут существовать 2 версии format_post одновременно
+    # (с ссылками на ответы и без)
+    last_main_post_id = 0
+    format_posts_with_reply = []
+    for i, post in enumerate(format_posts):
+        format_posts_with_reply.append(list(format_posts[i]))
+        format_posts_with_reply[i].append([])
+        if post[0] == 1:
+            last_main_post_id = i
+        else:
+            format_posts_with_reply[last_main_post_id][3].append(i)
+
     form2 = Close_button()
 
     if form2.validate_on_submit():
@@ -282,8 +297,8 @@ def index2(db_section):
                 show_posts(format_posts[index][1].id)
         except:
             pass
-    return render_template("main.html", format_posts=format_posts, section=db_section, form2=form2,
-                           hidden_posts=hidden_posts, bless=bless)
+    return render_template("main.html", format_posts=format_posts, format_posts_with_reply=format_posts_with_reply,
+                           section=db_section, form2=form2, hidden_posts=hidden_posts, bless=bless)
 
     # print(type(format_posts[index][1]))
     # этот ретерн можно не писать

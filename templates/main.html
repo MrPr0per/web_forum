@@ -5,74 +5,123 @@
     </form>
 
     <p>
-      <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+      <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample0" aria-expanded="false" aria-controls="collapseExample">
         Button with data-bs-target
       </button>
     </p>
-    <div class="collapse" id="collapseExample">
+    <div class="collapse" id="collapseExample0">
       <div class="card card-body">
         Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
       </div>
     </div>
 
-    {% for deep, post, hidden_button_val in format_posts%}
-        {%if deep > 0%}
-            {%set a = namespace(foo=False)%}
-            {%for k, v in hidden_posts.items()%}
-                {%if post.id in v%}
-                    {% set a.foo = True %}
-                {%endif%}
-            {%endfor%}
-            {%if a.foo == False or deep==1 %}
-
-                <div style="margin-left: {{100 * (deep-1)}}px;" class="card card-body post">
-                    {% if post.files != None %}
-                    <a href="{{post.files}}" target="_blank"><img src={{post.files}} alt="нет_картинки" width="150"></a>
-                    {% endif %}
-                    <h2>{{post.title}}</h2>
-                    <div>
-                        {{post.content}}
-                    </div>
-                    <div style="color:red;">
-                        {%if post.blessing%}
-                            пост благославлен следующими модераторами:
-                            {{post.blessing}}
-                        {%endif%}
-                    </div>
-                    <form action="messenge_to/{{section}}/{{post.id}}" method="post">
-                        <button type="submit" class="position_center borders">ответить</button>
-                    </form>
-
-                    {%if deep == 1%}
-                        <form action="" method="post" novalidate>
-                            <div>
-                                {{ form2.csrf_token }}
-                            </div>
-                            {% for field in form2 if field.name != 'csrf_token' %}
-                                <div>
-                                    {{ field() }}
-                                </div>
-                            {% endfor %}
-                            <div><input type="hidden" name="data" value="2"></div>
-                            <div><input type="hidden" name="index" value="{{loop['index0']}}"></div>
-                        </form>
-                    {%endif%}
-                    {% if current_user.is_authenticated %}
-                        <form action="" method="post" novalidate>
-                            <div>
-                                {{ form2.csrf_token }}
-                            </div>
-                            {% for field in bless if field.name != 'csrf_token' %}
-                                <div>
-                                    {{ field() }}
-                                </div>
-                            {% endfor %}
-                            <div><input type="hidden" name="name" value={{current_user.nickname}}></div>
-                            <div><input type="hidden" name="index2" value={{post.id}}></div>
-                        </form>
+    {% for deep, post, hidden_button_val, reply_list in format_posts_with_reply %}
+        {% if deep == 1 %}
+            <div style="margin-left: {{100 * (deep-1)}}px;" class="card card-body post">
+                {% if post.files != None %}
+                <a href="{{post.files}}" target="_blank"><img src={{post.files}} alt="нет_картинки" width="150"></a>
+                {% endif %}
+                <h2>{{post.title}}</h2>
+                <div>
+                    {{post.content}}
+                </div>
+                <div style="color:red;">
+                    {%if post.blessing%}
+                        пост благославлен следующими модераторами:
+                        {{post.blessing}}
                     {%endif%}
                 </div>
-            {%endif%}
-        {%endif%}
+                <form action="messenge_to/{{section}}/{{post.id}}" method="post">
+                    <button type="submit" class="position_center borders">ответить</button>
+                </form>
+                <p>
+                  <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample{{loop.index}}" aria-expanded="false" aria-controls="collapseExample">
+                    скрыть/открыть ответы
+                  </button>
+                </p>
+                <div class="collapse" id="collapseExample{{loop.index}}">
+                    {% for reply_id in reply_list %}
+                        {% set r_deep, r_post, r_hidden_button_val, r_reply_list = format_posts_with_reply[reply_id] %}
+                        <div style="margin-left: {{100 * (r_deep-1)}}px;" class="card card-body post">
+                                {% if r_post.files != None %}
+                                <a href="{{r_post.files}}" target="_blank"><img src={{r_post.files}} alt="нет_картинки" width="150"></a>
+                                {% endif %}
+                                <h2>{{r_post.title}}</h2>
+                                <div>{{r_post.content}}</div>
+                                <div style="color:red;">
+                                    {%if r_post.blessing%}
+                                        пост благославлен следующими модераторами: {{r_post.blessing}}
+                                    {%endif%}
+                                </div>
+                                <form action="messenge_to/{{section}}/{{r_post.id}}" method="post">
+                                    <button type="submit" class="position_center borders">ответить</button>
+                                </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
     {% endfor %}
+
+<!--    {% for deep, post, hidden_button_val in format_posts %}-->
+<!--        {%if deep > 0%}-->
+<!--            {%set a = namespace(foo=False)%}-->
+<!--            {%for k, v in hidden_posts.items()%}-->
+<!--                {%if post.id in v%}-->
+<!--                    {% set a.foo = True %}-->
+<!--                {%endif%}-->
+<!--            {%endfor%}-->
+<!--            {%if a.foo == False or deep==1 %}-->
+
+<!--                <div style="margin-left: {{100 * (deep-1)}}px;" class="card card-body post">-->
+<!--                    {% if post.files != None %}-->
+<!--                    <a href="{{post.files}}" target="_blank"><img src={{post.files}} alt="нет_картинки" width="150"></a>-->
+<!--                    {% endif %}-->
+<!--                    <h2>{{post.title}}</h2>-->
+<!--                    <div>-->
+<!--                        {{post.content}}-->
+<!--                    </div>-->
+<!--                    <div style="color:red;">-->
+<!--                        {%if post.blessing%}-->
+<!--                            пост благославлен следующими модераторами:-->
+<!--                            {{post.blessing}}-->
+<!--                        {%endif%}-->
+<!--                    </div>-->
+<!--                    <form action="messenge_to/{{section}}/{{post.id}}" method="post">-->
+<!--                        <button type="submit" class="position_center borders">ответить</button>-->
+<!--                    </form>-->
+
+<!--                    {%if deep == 1%}-->
+<!--                        <form action="" method="post" novalidate>-->
+<!--                            <div>-->
+<!--                                {{ form2.csrf_token }}-->
+<!--                            </div>-->
+<!--                            {% for field in form2 if field.name != 'csrf_token' %}-->
+<!--                                <div>-->
+<!--                                    {{ field() }}-->
+<!--                                </div>-->
+<!--                            {% endfor %}-->
+<!--                            <div><input type="hidden" name="data" value="2"></div>-->
+<!--                            <div><input type="hidden" name="index" value="{{loop['index0']}}"></div>-->
+<!--                        </form>-->
+<!--                    {%endif%}-->
+<!--                    {% if current_user.is_authenticated %}-->
+<!--                        <form action="" method="post" novalidate>-->
+<!--                            <div>-->
+<!--                                {{ form2.csrf_token }}-->
+<!--                            </div>-->
+<!--                            {% for field in bless if field.name != 'csrf_token' %}-->
+<!--                                <div>-->
+<!--                                    {{ field() }}-->
+<!--                                </div>-->
+<!--                            {% endfor %}-->
+<!--                            <div><input type="hidden" name="name" value={{current_user.nickname}}></div>-->
+<!--                            <div><input type="hidden" name="index2" value={{post.id}}></div>-->
+<!--                        </form>-->
+<!--                    {%endif%}-->
+<!--                </div>-->
+<!--            {%endif%}-->
+<!--        {%endif%}-->
+<!--    {% endfor %}-->
+
 {%endblock%}
