@@ -37,6 +37,9 @@ login_manager.init_app(app)
 
 ycloud_manager = yadisk.YaDisk(token="AQAAAABgRHWRAAfWz0e6ldvRxkQerikLrbA9aG8")
 
+# TODO: перед деплоем отключить:
+develop_mode = False  # когда включен этот режим, отключается капча и синхронизация картинок
+
 update_time = int(15 * 60)  # промежуток времени в секундах, через который делается проверка бд на актуальность
 db_is_outdated = False  # флаг, является ли бд в облаке устаревшей
 timer_is_sleep = False  # флаг, заснул ли таймер
@@ -44,6 +47,12 @@ timer_is_sleep = False  # флаг, заснул ли таймер
 # он работает, когда есть хоть 1 пост в течение update_time
 # он просыпается, когда появился пост после того, как таймер заснул
 enable_imagecloud_logs = True
+if develop_mode:
+    enable_captcha = False
+    enable_image_sync_with_cloud = False
+else:
+    enable_captcha = True
+    enable_image_sync_with_cloud = True
 
 
 @login_manager.user_loader
@@ -74,8 +83,8 @@ class Answer_Form(FlaskForm):
     # title = StringField('введите заголовок', validators=[DataRequired()])
     # messenge = StringField('введите ваше сообщение', validators=[DataRequired()])
 
-    # T O D O: раскомментить рекапчу
-    recaptcha = RecaptchaField()
+    if enable_captcha:
+        recaptcha = RecaptchaField()
     submit = SubmitField('запостить')
 
 
@@ -333,9 +342,10 @@ def download_dir(path, to_dir, deep=0):
             print('загрузка картинок из облака завершена')
 
 
-def download_bd():
+def download_bd(enable_download_image=True):
     ycloud_manager.download("/cloud/borda.db", "db/borda.db")
-    download_dir('cloud/images', 'static/images/uploads')
+    if enable_download_image:
+        download_dir('cloud/images', 'static/images/uploads')
 
 
 def upload_bd():
@@ -369,7 +379,7 @@ def main():
 
     # надеюсь, что когда хироку уходит в ребут,
     # то он начинает работать отсюда
-    download_bd()
+    download_bd(enable_download_image=enable_image_sync_with_cloud)
     check_bd()
 
     port = int(os.environ.get("PORT", 5000))
