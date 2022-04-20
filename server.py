@@ -38,7 +38,7 @@ login_manager.init_app(app)
 ycloud_manager = yadisk.YaDisk(token="AQAAAABgRHWRAAfWz0e6ldvRxkQerikLrbA9aG8")
 
 # TODO: перед деплоем отключить:
-develop_mode = False  # когда включен этот режим, отключается капча и синхронизация картинок
+develop_mode = True  # когда включен этот режим, отключается капча и синхронизация картинок
 
 update_time = int(15 * 60)  # промежуток времени в секундах, через который делается проверка бд на актуальность
 db_is_outdated = False  # флаг, является ли бд в облаке устаревшей

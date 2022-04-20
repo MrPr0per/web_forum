@@ -1,3 +1,7 @@
+.post {
+    background-color: rgb(219, 184, 147) !important;
+}
+
 .col {
   -ms-flex-preferred-size: 0;
   flex-basis: 0;
@@ -29,5 +33,3 @@
 .container{
 background-color: #f7cd7e8f;
 }
-
-
