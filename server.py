@@ -3,6 +3,7 @@ import datetime
 from flask import Flask, render_template, request
 
 from data import db_session
+from data import posts
 from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, EmailField, TextAreaField
 from wtforms.validators import DataRequired
@@ -119,7 +120,15 @@ def index():
             gifs_ids2.append(number)
             i += 1
 
-    return render_template("home.html", boards=boards, gifs_ids=gifs_ids, gifs_ids2=gifs_ids2)
+    count_posts = {}
+    for line in boards:
+        for db_section in line[1:]:
+            db_sess = db_session.create_session()
+            a = getattr(posts, db_section[1:])
+            count = len(list(db_sess.query(a).all()))
+            count_posts[db_section] = count
+
+    return render_template("home.html", boards=boards, gifs_ids=gifs_ids, gifs_ids2=gifs_ids2, count_posts=count_posts)
 
 
 @app.route('/register', methods=['GET', 'POST'])

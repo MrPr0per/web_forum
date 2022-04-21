@@ -19,7 +19,17 @@
         <div class = "row">
             {%for i in j%}
             {%if i != j[0]%}
-            <div class="col"><div class="media"><p><a href="./{{i}}">{{i}}</a>></p></div></div>
+            <div class="col">
+                <div class="media">
+                    <p style="font-size: 18pt;">
+                        <a href="./{{i}}">{{i}}</a>
+                        >
+                    </p>
+                    <p>
+                        постов: {{count_posts[i]}}
+                    </p>
+                </div>
+            </div>
             {%else%}
                 <p>{{i}}</p>
             {%endif%}
