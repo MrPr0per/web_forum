@@ -4,17 +4,6 @@
         <button type="submit" class="position_center borders">написать пост</button>
     </form>
 
-    <p>
-      <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample0" aria-expanded="false" aria-controls="collapseExample">
-        Button with data-bs-target
-      </button>
-    </p>
-    <div class="collapse" id="collapseExample0">
-      <div class="card card-body">
-        Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
-      </div>
-    </div>
-
     {% for deep, post, hidden_button_val, reply_list in format_posts_with_reply %}
         {% if deep == 1 %}
             <div style="margin-left: {{100 * (deep-1)}}px;" class="card card-body post">
@@ -32,6 +21,22 @@
                         {{post.blessing}}
                     {%endif%}
                 </div>
+
+                {% if current_user.is_authenticated %}
+                    <form action="" method="post" novalidate>
+                        <div>
+                            {{ form2.csrf_token }}
+                        </div>
+                        {% for field in bless if field.name != 'csrf_token' %}
+                            <div>
+                                {{ field() }}
+                            </div>
+                        {% endfor %}
+                        <div><input type="hidden" name="name" value={{current_user.nickname}}></div>
+                        <div><input type="hidden" name="index2" value={{post.id}}></div>
+                    </form>
+                {%endif%}
+
                 <form action="messenge_to/{{section}}/{{post.id}}" method="post">
                     <button type="submit" class="btn btn-primary">ответить</button>
                 </form>
@@ -56,6 +61,20 @@
                                 пост благославлен следующими модераторами: {{r_post.blessing}}
                             {%endif%}
                         </div>
+                        {% if current_user.is_authenticated %}
+                            <form action="" method="post" novalidate>
+                                <div>
+                                    {{ form2.csrf_token }}
+                                </div>
+                                {% for field in bless if field.name != 'csrf_token' %}
+                                    <div>
+                                        {{ field() }}
+                                    </div>
+                                {% endfor %}
+                                <div><input type="hidden" name="name" value={{current_user.nickname}}></div>
+                                <div><input type="hidden" name="index2" value={{post.id}}></div>
+                            </form>
+                        {%endif%}
                         <form action="messenge_to/{{section}}/{{r_post.id}}" method="post">
                             <button type="submit" class="btn btn-primary">ответить</button>
                         </form>
