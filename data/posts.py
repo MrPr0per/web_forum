@@ -13,6 +13,7 @@ class User(SqlAlchemyBase, UserMixin):
     nickname = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     verifyed = sqlalchemy.Column(sqlalchemy.Boolean, nullable=True)
+    key_for_reg = sqlalchemy.Column(sqlalchemy.String, nullable=True, default=None)
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)

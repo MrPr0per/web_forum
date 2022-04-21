@@ -41,7 +41,7 @@ login_manager.init_app(app)
 ycloud_manager = yadisk.YaDisk(token="AQAAAABgRHWRAAfWz0e6ldvRxkQerikLrbA9aG8")
 
 # TODO: перед деплоем отключить:
-local_mode = True  # когда включен этот режим,
+local_mode = False  # когда включен этот режим,
 # отключается капча и синхронизация картинок, по другому генерируется время поста
 
 update_time = int(15 * 60)  # промежуток времени в секундах, через который делается проверка бд на актуальность
@@ -406,6 +406,14 @@ def check_bd():
         t.start()
     else:
         timer_is_sleep = True
+
+
+@app.route('/gen_key')
+def gen_key():
+    letters = 'qwertyuiopasdfghjklzxcvbnm1234567890'
+    n = 30
+    key = ''.join(random.choice(letters) for i in range(n))
+    return render_template("gen_key.html", key=key)
 
 
 def main():

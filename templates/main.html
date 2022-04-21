@@ -10,7 +10,7 @@
             <div style="margin-left: {{100 * (deep-1)}}px;" class="card card-body post">
                 <p>{{post.created_date}}</p>
                 {% if post.files != None %}
-                <a href="{{post.files}}" target="_blank"><img src={{post.files}} alt="нет_картинки" width="150"></a>
+                <a href="{{post.files}}" target="_blank"><img src={{post.files}} alt="не удалось загрузить картинку из {{post.files}}" width="150"></a>
                 {% endif %}
                 <h2>{{post.title}}</h2>
                 <div>
@@ -49,7 +49,7 @@
                     <div style="margin-left: {{100 * (r_deep-1)}}px;" class="card card-body post">
                         <p>{{r_post.created_date}}</p>
                         {% if r_post.files != None %}
-                        <a href="{{r_post.files}}" target="_blank"><img src={{r_post.files}} alt="нет_картинки" width="150"></a>
+                        <a href="{{r_post.files}}" target="_blank"><img src={{r_post.files}} alt="не удалось загрузить картинку из {{r_post.files}}" width="150"></a>
                         {% endif %}
                         <h2>{{r_post.title}}</h2>
                         <div>{{r_post.content}}</div>
@@ -76,66 +76,5 @@
             </div>
         {% endif %}
     {% endfor %}
-
-<!--    {% for deep, post, hidden_button_val in format_posts %}-->
-<!--        {%if deep > 0%}-->
-<!--            {%set a = namespace(foo=False)%}-->
-<!--            {%for k, v in hidden_posts.items()%}-->
-<!--                {%if post.id in v%}-->
-<!--                    {% set a.foo = True %}-->
-<!--                {%endif%}-->
-<!--            {%endfor%}-->
-<!--            {%if a.foo == False or deep==1 %}-->
-
-<!--                <div style="margin-left: {{100 * (deep-1)}}px;" class="card card-body post">-->
-<!--                    {% if post.files != None %}-->
-<!--                    <a href="{{post.files}}" target="_blank"><img src={{post.files}} alt="нет_картинки" width="150"></a>-->
-<!--                    {% endif %}-->
-<!--                    <h2>{{post.title}}</h2>-->
-<!--                    <div>-->
-<!--                        {{post.content}}-->
-<!--                    </div>-->
-<!--                    <div style="color:red;">-->
-<!--                        {%if post.blessing%}-->
-<!--                            пост благославлен следующими модераторами:-->
-<!--                            {{post.blessing}}-->
-<!--                        {%endif%}-->
-<!--                    </div>-->
-<!--                    <form action="messenge_to/{{section}}/{{post.id}}" method="post">-->
-<!--                        <button type="submit" class="position_center borders">ответить</button>-->
-<!--                    </form>-->
-
-<!--                    {%if deep == 1%}-->
-<!--                        <form action="" method="post" novalidate>-->
-<!--                            <div>-->
-<!--                                {{ form2.csrf_token }}-->
-<!--                            </div>-->
-<!--                            {% for field in form2 if field.name != 'csrf_token' %}-->
-<!--                                <div>-->
-<!--                                    {{ field() }}-->
-<!--                                </div>-->
-<!--                            {% endfor %}-->
-<!--                            <div><input type="hidden" name="data" value="2"></div>-->
-<!--                            <div><input type="hidden" name="index" value="{{loop['index0']}}"></div>-->
-<!--                        </form>-->
-<!--                    {%endif%}-->
-<!--                    {% if current_user.is_authenticated %}-->
-<!--                        <form action="" method="post" novalidate>-->
-<!--                            <div>-->
-<!--                                {{ form2.csrf_token }}-->
-<!--                            </div>-->
-<!--                            {% for field in bless if field.name != 'csrf_token' %}-->
-<!--                                <div>-->
-<!--                                    {{ field() }}-->
-<!--                                </div>-->
-<!--                            {% endfor %}-->
-<!--                            <div><input type="hidden" name="name" value={{current_user.nickname}}></div>-->
-<!--                            <div><input type="hidden" name="index2" value={{post.id}}></div>-->
-<!--                        </form>-->
-<!--                    {%endif%}-->
-<!--                </div>-->
-<!--            {%endif%}-->
-<!--        {%endif%}-->
-<!--    {% endfor %}-->
 
 {%endblock%}

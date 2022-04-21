@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{%block content%}
+
+{% if current_user.is_authenticated %}
+    <p>по этому ключу человек сможет зарегистрироваться в модератора</p>
+    <h4>{{key}}</h4>
+{% else %}
+    <p>закрытая вечеринка, доступно только админам</p>
+{% endif %}
+
+{%endblock%}
