@@ -8,20 +8,24 @@
 
 </head>
 <body style="background-color:#a0b3c6b3;">
-    <a href="/"><h1>3ch.af</h1></a>
-    {% if current_user.is_authenticated %}
-    <div>
-        вы вошли под именем
-        <a class="navbar-brand" href="/logout">{{ current_user.nickname }}</a>
-        нажмите, чтобы разлогиниться
-    </div>
+    <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+        <div class="container-fluid">
+            <a href="/"><h1>3ch.af</h1></a>
+            {% if current_user.is_authenticated %}
+            <div>
+                <h5>
+                    вы вошли под именем <a href="/logout">{{ current_user.nickname }}</a> нажмите, чтобы разлогиниться
+                </h5>
+            </div>
 
-    {% else %}
-        <p>
-            <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
-            <a class="btn btn-success" href="/login">Войти</a>
-        </p>
-    {% endif %}
+            {% else %}
+                <p>
+                    <a class="btn btn-reg" href="/register">Зарегистрироваться</a>
+                    <a class="btn btn-log" href="/login">Войти</a>
+                </p>
+            {% endif %}
+        </div>
+    </nav>
 
     {% block content %}{% endblock %}
 

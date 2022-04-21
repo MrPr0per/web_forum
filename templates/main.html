@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {%block content%}
+    <br>
     <form action="messenge_to/{{section}}/0" method="post">
-        <button type="submit" class="btn btn-danger btn-lg">написать пост</button>
+        <button type="submit" class="btn btn-post btn-lg">написать пост</button>
     </form>
     <br>
     {% for deep, post, hidden_button_val, reply_list in format_posts_with_reply %}
@@ -27,17 +28,17 @@
                         <div>
                             {{ form2.csrf_token }}
                         </div>
-                        {{bless.submit(class="btn btn-info")}}
+                        {{bless.submit(class="btn btn-bless")}}
                         <div><input type="hidden" name="name" value={{current_user.nickname}}></div>
                         <div><input type="hidden" name="index2" value={{post.id}}></div>
                     </form>
                 {%endif%}
 
                 <form action="messenge_to/{{section}}/{{post.id}}" method="post">
-                    <button type="submit" class="btn btn-primary">ответить</button>
+                    <button type="submit" class="btn btn-reply">ответить</button>
                 </form>
                 <p>
-                  <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample{{loop.index}}" aria-expanded="false" aria-controls="collapseExample">
+                  <button class="btn btn-show_repl" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample{{loop.index}}" aria-expanded="false" aria-controls="collapseExample">
                     скрыть/открыть ответы
                   </button>
                 </p>
@@ -62,13 +63,13 @@
                                 <div>
                                     {{ form2.csrf_token }}
                                 </div>
-                                {{bless.submit(class="btn btn-info")}}
+                                {{bless.submit(class="btn btn-bless")}}
                                 <div><input type="hidden" name="name" value={{current_user.nickname}}></div>
                                 <div><input type="hidden" name="index2" value={{post.id}}></div>
                             </form>
                         {%endif%}
                         <form action="messenge_to/{{section}}/{{r_post.id}}" method="post">
-                            <button type="submit" class="btn btn-primary">ответить</button>
+                            <button type="submit" class="btn btn-reply">ответить</button>
                         </form>
                     </div>
                 {% endfor %}

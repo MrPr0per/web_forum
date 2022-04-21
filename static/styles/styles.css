@@ -2,6 +2,31 @@
     background-color: rgb(219, 184, 147) !important;
 }
 
+.btn-post {
+    background-color: #153799 !important;
+    color: #fff !important;
+}
+.btn-reg {
+    background-color: #5A77CC !important;
+    color: #fff !important;
+}
+.btn-log {
+    background-color: #5A77CC !important;
+    color: #fff !important;
+}
+.btn-bless {
+    background-color: #8AE5FF !important;
+}
+.btn-reply {
+    background-color: #FFDCC9 !important;
+}
+.btn-show_repl {
+    background-color: #E6846B !important;
+}
+
+
+
+
 .col {
   -ms-flex-preferred-size: 0;
   flex-basis: 0;
