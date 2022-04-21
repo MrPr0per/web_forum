@@ -273,6 +273,8 @@ def index2(db_section):
     last_main_post_id = 0
     format_posts_with_reply = []
     for i, post in enumerate(format_posts):
+        if post[0] == 0:  # если отступ = 0
+            continue
         format_posts_with_reply.append(list(format_posts[i]))
         format_posts_with_reply[i].append([])
         if post[0] == 1:
