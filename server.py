@@ -187,10 +187,13 @@ def create_messenge(section, reply_to_id):
         messenge = request.form["messenge"]
         title = request.form["title"]
         file = request.files["file_upload"]
+        file_href = request.form["file_href"]
         id = len(get_format_posts(section, buttons))
         if file:
             filename = f"{filepath}{section}/picture{id}.{file.filename.split('.')[1]}"
             file.save(filename)
+        elif file_href:
+            filename = file_href
         else:
             filename = ""
             # print("aboba")
@@ -284,7 +287,8 @@ def index2(db_section):
     # ооо сейчас будут говнокостыли: структура поста будет переделана
     # из    (отступ, пост, переменная_отвечающая_за_скрытие)
     # в     [отступ, пост, переменная_отвечающая_за_скрытие, список_id_постов-ответов]
-    # апдейт: после этого преобразования все слетело нахуй, так что будут существовать 2 версии format_post одновременно
+    # апдейт: после этого преобразования все слетело [к черту],
+    # так что будут существовать 2 версии format_post одновременно
     # (с ссылками на ответы и без)
     last_main_post_id = 0
     format_posts_with_reply = []

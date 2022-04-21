@@ -14,6 +14,9 @@
         <div>
             <input type="file" class="form-control-file" name="file_upload">
         </div>
+        <div>
+            можно так же отправить картинку, вставив сюда ссылку на нее<input style="width: 100%;" type="text" name="file_href">
+        </div>
         {% for field in form if field.name != 'csrf_token' %}
         <div>
             {{ field() }}
