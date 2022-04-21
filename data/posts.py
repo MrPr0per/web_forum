@@ -6,17 +6,20 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from .db_session import SqlAlchemyBase
 
+
 class User(SqlAlchemyBase, UserMixin):
     __tablename__ = 'users'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     nickname = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    verifyed=sqlalchemy.Column(sqlalchemy.Boolean, nullable=True)
+    verifyed = sqlalchemy.Column(sqlalchemy.Boolean, nullable=True)
+
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.hashed_password, password)
+
 
 class main_class():
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
@@ -32,66 +35,84 @@ class main_class():
         content = str(self.content)
         max_len = 20
         if len(title) > max_len:
-            title = title[:max_len-3] + '...'
+            title = title[:max_len - 3] + '...'
         if len(content) > max_len:
-            content = content[:max_len-3] + '...'
+            content = content[:max_len - 3] + '...'
 
         return f'Post(id={self.id}, reply_to_id={self.reply_to_id}, title={title}, content={content})'
 
-class b(SqlAlchemyBase,main_class):
+
+class b(SqlAlchemyBase, main_class):
     __tablename__ = '/b'
 
 
-class abu(SqlAlchemyBase,main_class):
+class abu(SqlAlchemyBase, main_class):
     __tablename__ = '/abu'
 
-class media(SqlAlchemyBase,main_class):
+
+class media(SqlAlchemyBase, main_class):
     __tablename__ = '/media'
 
-class r(SqlAlchemyBase,main_class):
+
+class r(SqlAlchemyBase, main_class):
     __tablename__ = '/r'
 
-class soc(SqlAlchemyBase,main_class):
+
+class soc(SqlAlchemyBase, main_class):
     __tablename__ = '/soc'
 
-class au(SqlAlchemyBase,main_class):
+
+class au(SqlAlchemyBase, main_class):
     __tablename__ = '/au'
 
-class bi(SqlAlchemyBase,main_class):
+
+class bi(SqlAlchemyBase, main_class):
     __tablename__ = '/bi'
 
-class biz(SqlAlchemyBase,main_class):
+
+class biz(SqlAlchemyBase, main_class):
     __tablename__ = '/biz'
 
-class bo(SqlAlchemyBase,main_class):
+
+class bo(SqlAlchemyBase, main_class):
     __tablename__ = '/bo'
 
-class cc(SqlAlchemyBase,main_class):
+
+class cc(SqlAlchemyBase, main_class):
     __tablename__ = '/cc'
 
-class de(SqlAlchemyBase,main_class):
+
+class de(SqlAlchemyBase, main_class):
     __tablename__ = '/de'
 
-class di(SqlAlchemyBase,main_class):
+
+class di(SqlAlchemyBase, main_class):
     __tablename__ = '/di'
 
-class diy(SqlAlchemyBase,main_class):
+
+class diy(SqlAlchemyBase, main_class):
     __tablename__ = '/diy'
 
-class mus(SqlAlchemyBase,main_class):
+
+class mus(SqlAlchemyBase, main_class):
     __tablename__ = '/mus'
 
-class p(SqlAlchemyBase,main_class):
+
+class p(SqlAlchemyBase, main_class):
     __tablename__ = '/p'
 
-class pa(SqlAlchemyBase,main_class):
+
+class pa(SqlAlchemyBase, main_class):
     __tablename__ = '/pa'
 
-class hry(SqlAlchemyBase,main_class):
+
+class hry(SqlAlchemyBase, main_class):
     __tablename__ = '/hry'
 
-class news(SqlAlchemyBase,main_class):
+
+class news(SqlAlchemyBase, main_class):
     __tablename__ = '/news'
 
-class po(SqlAlchemyBase,main_class):
+
+class po(SqlAlchemyBase, main_class):
     __tablename__ = '/po'

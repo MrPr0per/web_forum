@@ -1,3 +1,5 @@
+import datetime
+
 from flask import Flask, render_template, request
 
 from data import db_session
@@ -38,7 +40,8 @@ login_manager.init_app(app)
 ycloud_manager = yadisk.YaDisk(token="AQAAAABgRHWRAAfWz0e6ldvRxkQerikLrbA9aG8")
 
 # TODO: перед деплоем отключить:
-develop_mode = True  # когда включен этот режим, отключается капча и синхронизация картинок
+local_mode = True  # когда включен этот режим,
+# отключается капча и синхронизация картинок, по другому генерируется время поста
 
 update_time = int(15 * 60)  # промежуток времени в секундах, через который делается проверка бд на актуальность
 db_is_outdated = False  # флаг, является ли бд в облаке устаревшей
@@ -47,7 +50,7 @@ timer_is_sleep = False  # флаг, заснул ли таймер
 # он работает, когда есть хоть 1 пост в течение update_time
 # он просыпается, когда появился пост после того, как таймер заснул
 enable_imagecloud_logs = True
-if develop_mode:
+if local_mode:
     enable_captcha = False
     enable_image_sync_with_cloud = False
 else:
@@ -184,7 +187,11 @@ def create_messenge(section, reply_to_id):
             # print("aboba")
         # title = form.title._value()
 
-        create_post(section, title, messenge, reply_to_id, hidden_posts, filename)
+        time = datetime.datetime.now()
+        if not local_mode:
+            time += datetime.timedelta(hours=5)
+
+        create_post(section, title, messenge, reply_to_id, hidden_posts, time, filename)
 
         # format_posts=get_format_posts(section,buttons)
         # hide_posts(id,id,format_posts)
@@ -273,7 +280,7 @@ def index2(db_section):
     last_main_post_id = 0
     format_posts_with_reply = []
     for i, post in enumerate(format_posts):
-        if post[0] == 0:  # если отступ = 0
+        if post[0] == 0:  # если отступ = 0, не добавляем этот пост в список
             continue
         format_posts_with_reply.append(list(format_posts[i]))
         format_posts_with_reply[i].append([])

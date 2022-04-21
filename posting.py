@@ -6,13 +6,13 @@ db_session.global_init("db/borda.db")
 db_sess = db_session.create_session()
 
 
-def create_post(section, title, messenge, reply_to_id, hidden_posts, file=None):
+def create_post(section, title, messenge, reply_to_id, hidden_posts, time, file=None):
     from data import posts
     a = getattr(posts, section)
     if file:
-        post = a(title=title, content=messenge, reply_to_id=reply_to_id, files=file)
+        post = a(title=title, content=messenge, reply_to_id=reply_to_id, created_date=time, files=file)
     else:
-        post = a(title=title, content=messenge, reply_to_id=reply_to_id)
+        post = a(title=title, content=messenge, reply_to_id=reply_to_id, created_date=time)
 
     db_sess.add(post)
     db_sess.commit()
