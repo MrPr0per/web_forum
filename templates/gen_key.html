@@ -2,8 +2,19 @@
 {%block content%}
 
 {% if current_user.is_authenticated %}
-    <p>по этому ключу человек сможет зарегистрироваться в модератора</p>
-    <h4>{{key}}</h4>
+    <p>по этим ключам человек сможет зарегистрироваться в модератора</p>
+    <div class="form0">
+    {% for key in keys %}
+        <p style="font-family: Lucida console;">
+            {{key.key}} -
+
+            {% if key.is_active %}
+            <font style="color:green">ключ не использовался</font>
+            {% else %} <font style="color:red">ключ использован</font>
+            {% endif %}
+        </p>
+    {% endfor %}
+    </div>
 {% else %}
     <p>закрытая вечеринка, доступно только админам</p>
 {% endif %}

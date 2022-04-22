@@ -27,19 +27,20 @@ def create_folders(boards, filepath):
                 os.mkdir(filepath + i[j])
 
 
-for post in db_sess.query(b).all():
-    db_sess.delete(post)
-for post in db_sess.query(abu).all():
-    db_sess.delete(post)
-for post in db_sess.query(User).all():
-    db_sess.delete(post)
-db_sess.commit()
-user = User()
-user.nickname = "goldenman"
-user.set_password("super-puper_password228")
-user.verifyed = True
-db_sess.add(user)
-db_sess.commit()
+# for post in db_sess.query(b).all():
+#     db_sess.delete(post)
+# for post in db_sess.query(abu).all():
+#     db_sess.delete(post)
+# for post in db_sess.query(User).all():
+#     db_sess.delete(post)
+# db_sess.commit()
+# user = User()
+# user.nickname = "goldenman"
+# user.set_password("super-puper_password228")
+# user.verifyed = True
+# db_sess.add(user)
+# db_sess.commit()
+
 # posts = [
 #     b(title="Первый пост", content="сап трич", reply_to_id=0),
 #     b(title="второй пост", content="привет привет", reply_to_id=1),

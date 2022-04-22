@@ -1,24 +1,31 @@
+# встроенные биб-ки
 import datetime
+import os
+import random
 
+# фласк
 from flask import Flask, render_template, request
-
-from data import db_session
-from data import posts
+from flask import redirect
+import flask_login
+from flask_login import LoginManager, login_user, logout_user, login_required
 from flask_wtf import FlaskForm, RecaptchaField
+
+# формы
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, EmailField, TextAreaField
 from wtforms.validators import DataRequired
-from flask import redirect
+
+# другие библиотеки
+import yadisk
+from pathlib import Path
+from threading import Timer
+
+# из своих файлов
+from data import db_session
+from data import posts
+from data.posts import User
+from data.keys import KeyForReg
 from posting import create_post, create_folders
 from draw_post_tree import get_format_posts, delete_data
-import os
-from flask_login import LoginManager, login_user, logout_user, login_required
-from data.posts import User
-import random
-from pathlib import Path
-import flask_login
-
-import yadisk
-from threading import Timer
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'in_fact_we_are_not_powerless_but_weak-willed__will_will_make_any_choice_right'
@@ -42,7 +49,7 @@ login_manager.init_app(app)
 ycloud_manager = yadisk.YaDisk(token="AQAAAABgRHWRAAfWz0e6ldvRxkQerikLrbA9aG8")
 
 # TODO: перед деплоем отключить:
-local_mode = True  # когда включен этот режим,
+local_mode = False  # когда включен этот режим,
 # отключается капча и синхронизация картинок, по другому генерируется время поста
 
 update_time = int(15 * 60)  # промежуток времени в секундах, через который делается проверка бд на актуальность
@@ -55,9 +62,12 @@ enable_imagecloud_logs = True
 if local_mode:
     enable_captcha = False
     enable_image_sync_with_cloud = False
+    enable_download_base = False
 else:
     enable_captcha = True
     enable_image_sync_with_cloud = True
+    enable_download_base = True
+
 
 
 @login_manager.user_loader
@@ -138,7 +148,7 @@ def reqister():
     form = RegisterForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        if not db_sess.query(User).filter(User.key_for_reg == form.key_for_reg.data).first():
+        if not db_sess.query(KeyForReg).filter(KeyForReg.key == form.key_for_reg.data).first():
             return render_template('registration.html', title='Регистрация', form=form,
                                    message="неверный инвайт ключ")
         if form.password.data != form.password_again.data:
@@ -153,6 +163,12 @@ def reqister():
         user.verifyed = False
         db_sess.add(user)
         db_sess.commit()
+
+        key_field = db_sess.query(KeyForReg).filter(KeyForReg.key == form.key_for_reg.data).first()
+        key_field.is_active = 0
+        db_sess.add(key_field)
+        db_sess.commit()
+
         return redirect('/login')
     return render_template('registration.html', title='Регистрация', form=form)
 
@@ -382,8 +398,9 @@ def download_dir(path, to_dir, deep=0):
             print('загрузка картинок из облака завершена')
 
 
-def download_bd(enable_download_image=True):
-    ycloud_manager.download("/cloud/borda.db", "db/borda.db")
+def download_bd(enable_download_image=True, enable_download_base=True):
+    if enable_download_base:
+        ycloud_manager.download("/cloud/borda.db", "db/borda.db")
     if enable_download_image:
         download_dir('cloud/images', 'static/images/uploads')
 
@@ -413,20 +430,32 @@ def check_bd():
 
 @app.route('/gen_key')
 def gen_key():
+    n_keys_for_one_user = 6
+
     letters = 'qwertyuiopasdfghjklzxcvbnm1234567890'
     n_block = 4
     len_block = 4
-    key = '-'.join(''.join(random.choice(letters) for i in range(len_block)) for j in range(n_block))
+
 
     db_sess = db_session.create_session()
     if flask_login.current_user.is_authenticated:
         user = db_sess.query(User).filter(User.id == flask_login.current_user.get_id()).first()
-        user.key_for_reg = key
-        db_sess.add(user)
-        db_sess.commit()
+        if not user.keys_already_gen:
+            for i in range(n_keys_for_one_user):
+                key = '-'.join(''.join(random.choice(letters) for i in range(len_block)) for j in range(n_block))
+                key_field = KeyForReg()
+                key_field.key = key
+                key_field.user_id = flask_login.current_user.get_id()
+                db_sess.add(key_field)
+            db_sess.commit()
 
+            user.keys_already_gen = 1
+            db_sess.add(user)
+            db_sess.commit()
 
-    return render_template("gen_key.html", key=key)
+        keys = list(db_sess.query(KeyForReg).filter(KeyForReg.user_id == user.id))
+
+    return render_template("gen_key.html", keys=keys)
 
 
 def main():
@@ -437,7 +466,7 @@ def main():
 
     # надеюсь, что когда хироку уходит в ребут,
     # то он начинает работать отсюда
-    download_bd(enable_download_image=enable_image_sync_with_cloud)
+    download_bd(enable_download_image=enable_image_sync_with_cloud, enable_download_base=enable_download_base)
     check_bd()
 
     port = int(os.environ.get("PORT", 5000))
