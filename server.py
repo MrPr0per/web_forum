@@ -15,6 +15,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required
 from data.posts import User
 import random
 from pathlib import Path
+import flask_login
 
 import yadisk
 from threading import Timer
@@ -41,7 +42,7 @@ login_manager.init_app(app)
 ycloud_manager = yadisk.YaDisk(token="AQAAAABgRHWRAAfWz0e6ldvRxkQerikLrbA9aG8")
 
 # TODO: перед деплоем отключить:
-local_mode = False  # когда включен этот режим,
+local_mode = True  # когда включен этот режим,
 # отключается капча и синхронизация картинок, по другому генерируется время поста
 
 update_time = int(15 * 60)  # промежуток времени в секундах, через который делается проверка бд на актуальность
@@ -78,6 +79,7 @@ class LoginForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     nickname = StringField('ваш никнэйм', validators=[DataRequired()])
+    key_for_reg = StringField('введите пригласительный инвайт ключ', validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
     password_again = PasswordField('Повторите пароль', validators=[DataRequired()])
     submit = SubmitField('Войти')
@@ -135,14 +137,15 @@ def index():
 def reqister():
     form = RegisterForm()
     if form.validate_on_submit():
-        if form.password.data != form.password_again.data:
-            return render_template('register.html', title='Регистрация',
-                                   form=form,
-                                   message="Пароли не совпадают")
         db_sess = db_session.create_session()
+        if not db_sess.query(User).filter(User.key_for_reg == form.key_for_reg.data).first():
+            return render_template('registration.html', title='Регистрация', form=form,
+                                   message="неверный инвайт ключ")
+        if form.password.data != form.password_again.data:
+            return render_template('registration.html', title='Регистрация', form=form,
+                                   message="Пароли не совпадают")
         if db_sess.query(User).filter(User.nickname == form.nickname.data).first():
-            return render_template('register.html', title='Регистрация',
-                                   form=form,
+            return render_template('registration.html', title='Регистрация', form=form,
                                    message="Такой пользователь уже есть")
         user = User()
         user.nickname = form.nickname.data
@@ -411,8 +414,18 @@ def check_bd():
 @app.route('/gen_key')
 def gen_key():
     letters = 'qwertyuiopasdfghjklzxcvbnm1234567890'
-    n = 30
-    key = ''.join(random.choice(letters) for i in range(n))
+    n_block = 4
+    len_block = 4
+    key = '-'.join(''.join(random.choice(letters) for i in range(len_block)) for j in range(n_block))
+
+    db_sess = db_session.create_session()
+    if flask_login.current_user.is_authenticated:
+        user = db_sess.query(User).filter(User.id == flask_login.current_user.get_id()).first()
+        user.key_for_reg = key
+        db_sess.add(user)
+        db_sess.commit()
+
+
     return render_template("gen_key.html", key=key)
 
 

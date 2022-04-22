@@ -1,9 +1,7 @@
-from data import posts
-from data import db_session
+import random
 
-db_session.global_init("db/borda.db")
-db_sess = db_session.create_session()
-db_section = 'r'
-a = getattr(posts, db_section)
-print(len(list(db_sess.query(a).all())))
-
+letters = 'qwertyuiopasdfghjklzxcvbnm1234567890'
+n_block = 4
+len_block = 4
+key = '-'.join(''.join(random.choice(letters) for i in range(len_block)) for j in range(n_block))
+print(key)

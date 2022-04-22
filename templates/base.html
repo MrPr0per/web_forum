@@ -13,11 +13,11 @@
             <a href="/"><h1>3ch.af</h1></a>
             {% if current_user.is_authenticated %}
             <div>
-                <h5>
+                <p style="font-size:16px;">
                     вы вошли под именем <a href="/logout">{{ current_user.nickname }}</a> нажмите, чтобы разлогиниться
-                </h5>
+                    <a class="btn btn-reg" href="/gen_key">сгенерировать ключ</a>
+                </p>
             </div>
-
             {% else %}
                 <p>
                     <a class="btn btn-reg" href="/register">Зарегистрироваться</a>

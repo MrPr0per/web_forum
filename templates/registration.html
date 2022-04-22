@@ -1,31 +1,41 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Регистрация</h1>
-<form action="" method="post">
+
+<form action="" method="post" class="form0">
+    <h1>Регистрация</h1>
     {{ form.hidden_tag() }}
-    <p>
-        {{ form.nickname.label }}<br>
-        {{ form.nickname() }}<br>
-    </p>
-    <p>
-        {{ form.password.label }}<br>
-        {{ form.password(class="form-control", type="password") }}<br>
+    <div class="mb-3">
+        {{ form.nickname.label(class="form-label") }}
+        {{ form.nickname(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.key_for_reg.label(class="form-label") }}
+        {{ form.key_for_reg(class="form-control") }}
+        {% for error in form.key_for_reg.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.password.label(class="form-label") }}
+        {{ form.password(class="form-control", type="password") }}
         {% for error in form.password.errors %}
             <p class="alert alert-danger" role="alert">
                 {{ error }}
             </p>
         {% endfor %}
-    </p>
-    <p>
-        {{ form.password_again.label }}<br>
-        {{ form.password_again(class="form-control", type="password") }}<br>
+    </div>
+    <div class="mb-3">
+        {{ form.password_again.label(class="form-label") }}
+        {{ form.password_again(class="form-control", type="password") }}
         {% for error in form.password_again.errors %}
             <p class="alert alert-danger" role="alert">
                 {{ error }}
             </p>
         {% endfor %}
-    </p>
+    </div>
 
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     {{message}}

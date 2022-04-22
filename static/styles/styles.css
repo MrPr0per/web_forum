@@ -2,6 +2,14 @@
     background-color: rgb(219, 184, 147) !important;
 }
 
+.form0 {
+    width: 38%;
+    margin: 0 auto;
+}
+.form0 h1 {
+    text-align: center;
+}
+
 .btn-post {
     background-color: #153799 !important;
     color: #fff !important;
