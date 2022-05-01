@@ -70,12 +70,14 @@ def walk_and_show(tree, buttons, deep=0):
 
 def get_format_posts(db_section, buttons):
     from data import posts
+    global posts2  # словарь вида {id: пост} (не ебу зачем он существует, я даже не помню, я ли его создавал)
     a = getattr(posts, db_section)
-    global posts2
+
+    db_sess = db_session.create_session()
     posts2 = {0: a()}
     if not format_posts:
         for post in db_sess.query(a).all():
-            walk_and_push(tree, post.reply_to_id, post.id)
+            walk_and_push(tree, post.reply_to_id, post.id)  # засовывает информацию в tree
             posts2[post.id] = post
         # print(tree)
         walk_and_show(tree, buttons)

@@ -10,7 +10,7 @@
             <div style="margin-left: {{100 * (deep-1)}}px;" class="card card-body post">
                 <p>{{post.created_date}}</p>
                 {% if post.files != None %}
-                <a href="{{post.files}}" target="_blank"><img src={{post.files}} alt="не удалось загрузить картинку из {{post.files}}" width="150"></a>
+                <a href="{{post.files}}" target="_blank"><img src={{post.files}} alt="не удалось загрузить картинку из {{post.files}}" ></a>
                 {% endif %}
                 <h2>{{post.title}}</h2>
                 <div>
@@ -49,7 +49,7 @@
                     <div style="margin-left: {{100 * (r_deep-1)}}px;" class="card card-body post">
                         <p>{{r_post.created_date}}</p>
                         {% if r_post.files != None %}
-                        <a href="{{r_post.files}}" target="_blank"><img src={{r_post.files}} alt="не удалось загрузить картинку из {{r_post.files}}" width="150"></a>
+                        <a href="{{r_post.files}}" target="_blank"><img src={{r_post.files}} alt="не удалось загрузить картинку из {{r_post.files}}" class=""></a>
                         {% endif %}
                         <h2>{{r_post.title}}</h2>
                         <div>{{r_post.content}}</div>

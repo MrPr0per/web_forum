@@ -2,6 +2,11 @@
     background-color: rgb(219, 184, 147) !important;
 }
 
+.post img {
+    //image-rendering: pixelated;
+    height: 150px;
+}
+
 .form0 {
     width: 38%;
     margin: 0 auto;

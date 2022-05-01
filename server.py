@@ -11,12 +11,13 @@ from flask_login import LoginManager, login_user, logout_user, login_required
 from flask_wtf import FlaskForm, RecaptchaField
 
 # формы
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, EmailField, TextAreaField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
 
 # другие библиотеки
 import yadisk
 from pathlib import Path
+import threading
 from threading import Timer
 
 # из своих файлов
@@ -24,7 +25,7 @@ from data import db_session
 from data import posts
 from data.posts import User
 from data.keys import KeyForReg
-from posting import create_post, create_folders
+from posting import create_post
 from draw_post_tree import get_format_posts, delete_data
 
 app = Flask(__name__)
@@ -68,6 +69,14 @@ else:
     enable_image_sync_with_cloud = True
     enable_download_base = True
 
+# получение списка фалов в облаке и списка имеющихся файлов
+# (это нужно чтобы пока картинки будут качаться, сервер мог работать:)
+# отображение картинок:
+#   если файл есть на сервере                           отобразить этот файл
+#   если файла нет на сервере, но он есть в облаке      отобразить картинку-сообщение, что файлы еще грузятся
+#   если файла нет нигде                                отобразить юрл с ошибкой
+cloud_files = []
+local_files = []
 
 
 @login_manager.user_loader
@@ -76,7 +85,7 @@ def load_user(user_id):
     return db_sess.query(User).get(user_id)
 
 
-class bless_form(FlaskForm):
+class BlessForm(FlaskForm):
     submit = SubmitField('благославить пост')
 
 
@@ -95,7 +104,7 @@ class RegisterForm(FlaskForm):
     submit = SubmitField('Войти')
 
 
-class Answer_Form(FlaskForm):
+class AnswerForm(FlaskForm):
     # title = StringField('введите заголовок', validators=[DataRequired()])
     # messenge = StringField('введите ваше сообщение', validators=[DataRequired()])
 
@@ -104,11 +113,11 @@ class Answer_Form(FlaskForm):
     submit = SubmitField('запостить')
 
 
-class Answer_button(FlaskForm):
+class AnswerButton(FlaskForm):
     submit = SubmitField('ответить')
 
 
-class Close_button(FlaskForm):
+class CloseButton(FlaskForm):
     submit2 = SubmitField('скрыть/открыть ответы')
 
 
@@ -198,7 +207,7 @@ def login():
 @app.route("/messenge_to/<section>/<int:reply_to_id>", methods=['GET', 'POST'])
 def create_messenge(section, reply_to_id):
     global db_is_outdated, timer_is_sleep
-    form = Answer_Form()
+    form = AnswerForm()
 
     if form.validate_on_submit():
 
@@ -252,6 +261,7 @@ def show_posts(begin_id):
 @app.route("/<db_section>", methods=['GET', 'POST'])
 def index2(db_section):
     global buttons, counter
+    global cloud_files, local_files
 
     # if not len(hidden_posts):
     if db_section == 'None':
@@ -259,7 +269,7 @@ def index2(db_section):
         return ""
 
     delete_data()
-    bless = bless_form()
+    bless = BlessForm()
     if bless.validate_on_submit():
         try:
             index = int(request.form["index2"])
@@ -307,8 +317,7 @@ def index2(db_section):
     # из    (отступ, пост, переменная_отвечающая_за_скрытие)
     # в     [отступ, пост, переменная_отвечающая_за_скрытие, список_id_постов-ответов]
     # апдейт: после этого преобразования все слетело [к черту],
-    # так что будут существовать 2 версии format_post одновременно
-    # (с ссылками на ответы и без)
+    # так что будут существовать 2 версии format_post одновременно (с ссылками на ответы и без)
     last_main_post_id = 0
     format_posts_with_reply = []
     for i, post in enumerate(format_posts):
@@ -321,7 +330,25 @@ def index2(db_section):
         else:
             format_posts_with_reply[last_main_post_id][3].append(i)
 
-    form2 = Close_button()
+    # если файла нет на сервере, но он есть в облаке, то картинка заменяется на картинку-сообщение о том,
+    # что картинки сейчас качаются
+    update_local_files()
+    for i, post in enumerate(format_posts_with_reply):
+        path = post[1].files
+        if path is None:
+            continue
+        if not path.startswith('static/images/uploads/'):
+            continue
+        path = path[len('static/images/uploads'):]
+        if (path not in local_files) and (path in cloud_files):
+            # fffuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu
+            # оказалось, что это посты как то связаны с db_sess и если поменять инфу об этих постах тут, то
+            # это отразится не только на текущей отрисовке страницы, а еще и на всех последующих
+            # а, ладно, я пофиксил это одной строчкой, добавив создание новой сессии в get_format_posts в постинге
+            # интересно, зачем я пишу эти некрологи, засирая и так большой код?
+            format_posts_with_reply[i][1].files = 'static/images/downloading_message.png'
+
+    form2 = CloseButton()
 
     if form2.validate_on_submit():
         try:
@@ -338,7 +365,7 @@ def index2(db_section):
                 show_posts(format_posts[index][1].id)
         except:
             pass
-    return render_template("main.html", format_posts=format_posts, format_posts_with_reply=format_posts_with_reply,
+    return render_template("main.html", format_posts_with_reply=format_posts_with_reply,
                            section=db_section, form2=form2, hidden_posts=hidden_posts, bless=bless)
 
     # print(type(format_posts[index][1]))
@@ -390,9 +417,13 @@ def download_dir(path, to_dir, deep=0):
             download_dir(path=cloud_obj_path, to_dir=local_obj_path, deep=deep + 1)
         elif obj.type == 'file':
             if enable_imagecloud_logs:
-                print('\t' * deep + obj.name)
+                print('\t' * deep + obj.name, end='')
+                print(' ' * (30 - len('\t' * deep + obj.name)), end='')
             if not os.path.exists(local_obj_path):
+                print('downloading...')
                 ycloud_manager.download(cloud_obj_path, local_obj_path)
+            else:
+                print()
     if deep == 0:
         if enable_imagecloud_logs:
             print('загрузка картинок из облака завершена')
@@ -413,12 +444,17 @@ def upload_bd():
     ycloud_manager.upload("db/borda.db", "/cloud/borda.db")
 
     upload_dir('static/images/uploads', 'cloud/images')
+    update_cloud_files()
 
 
 def check_bd():
     """проверка бд на актуальность"""
     global db_is_outdated, timer_is_sleep, update_time
     if db_is_outdated:
+        uploading_thread = threading.Thread(target=download_bd,
+                                            kwargs={'enable_download_image': enable_image_sync_with_cloud,
+                                                    'enable_download_base': enable_download_base})
+        uploading_thread.start()
         upload_bd()
         db_is_outdated = False
         timer_is_sleep = False
@@ -435,7 +471,7 @@ def gen_key():
     letters = 'qwertyuiopasdfghjklzxcvbnm1234567890'
     n_block = 4
     len_block = 4
-
+    keys = []
 
     db_sess = db_session.create_session()
     if flask_login.current_user.is_authenticated:
@@ -458,15 +494,43 @@ def gen_key():
     return render_template("gen_key.html", keys=keys)
 
 
+def update_cloud_files():
+    global cloud_files
+    cloud_files = []
+    a = list(ycloud_manager.get_files())
+    for i in a:
+        if i.path.startswith('disk:/cloud/images/'):
+            path = i.path[len('disk:/cloud/images'):]
+            cloud_files.append(path)
+
+
+def update_local_files():
+    global local_files
+    local_files = []
+    b = list(os.walk('static/images/uploads'))
+    for i in b[1:]:
+        razdel = i[0][i[0].rfind('\\') + 1:]
+        for j in i[2]:
+            path = '/' + razdel + '/' + j
+            local_files.append(path)
+
+
 def main():
     db_session.global_init("db/borda.db")
     # for self
     # app.run(port=8080, host='127.0.0.1')
     # for internet
 
+    update_cloud_files()
+    update_local_files()
+
     # надеюсь, что когда хироку уходит в ребут,
     # то он начинает работать отсюда
-    download_bd(enable_download_image=enable_image_sync_with_cloud, enable_download_base=enable_download_base)
+    download_thread = threading.Thread(target=download_bd,
+                                       kwargs={'enable_download_image': enable_image_sync_with_cloud,
+                                               'enable_download_base': enable_download_base})
+    download_thread.start()
+    # download_bd(enable_download_image=enable_image_sync_with_cloud, enable_download_base=enable_download_base)
     check_bd()
 
     port = int(os.environ.get("PORT", 5000))
