@@ -508,10 +508,26 @@ def update_local_files():
     local_files = []
     b = list(os.walk('static/images/uploads'))
     for i in b[1:]:
-        razdel = i[0][i[0].rfind('\\') + 1:]
+        razdel = i[0][len('static/images/uploads') + 1:]
         for j in i[2]:
             path = '/' + razdel + '/' + j
             local_files.append(path)
+
+
+def compare_local_and_cloud_files():
+    global cloud_files
+    global local_files
+    print('сравнение фалов в облаке и локальных')
+    print('облако', ' ' * (30 - len('облако')), 'локалка', sep='')
+    for path in cloud_files:
+        print(path, end='')
+        print(' ' * (30 - len(path)), end='')
+        if path in local_files:
+            print(path)
+        else:
+            print('-')
+    print('конец сравнения')
+
 
 
 def main():
@@ -522,6 +538,9 @@ def main():
 
     update_cloud_files()
     update_local_files()
+
+    # проверка файлов (кажется на хероку неправильно определяются локальные файлы)
+    compare_local_and_cloud_files()
 
     # надеюсь, что когда хироку уходит в ребут,
     # то он начинает работать отсюда
