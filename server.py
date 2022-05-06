@@ -341,11 +341,6 @@ def index2(db_section):
             continue
         path = path[len('static/images/uploads'):]
         if (path not in local_files) and (path in cloud_files):
-            # fffuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu
-            # оказалось, что это посты как то связаны с db_sess и если поменять инфу об этих постах тут, то
-            # это отразится не только на текущей отрисовке страницы, а еще и на всех последующих
-            # а, ладно, я пофиксил это одной строчкой, добавив создание новой сессии в get_format_posts в постинге
-            # интересно, зачем я пишу эти некрологи, засирая и так большой код?
             format_posts_with_reply[i][1].files = 'static/images/downloading_message.png'
 
     form2 = CloseButton()
@@ -376,8 +371,6 @@ def index2(db_section):
 
 def upload_dir(path, to_dir, deep=0):
     if deep == 0:
-        if enable_imagecloud_logs:
-            print('загрузка картинок на облако...')
         if not ycloud_manager.exists(to_dir):
             ycloud_manager.mkdir(to_dir)
     for obj in os.listdir(path=path):
@@ -394,15 +387,10 @@ def upload_dir(path, to_dir, deep=0):
                 print('\t' * deep + obj)
             if not ycloud_manager.exists(cloud_obj_path):
                 ycloud_manager.upload(local_obj_path, cloud_obj_path)
-    if deep == 0:
-        if enable_imagecloud_logs:
-            print('загрузка картинок на облако завершена')
 
 
 def download_dir(path, to_dir, deep=0):
     if deep == 0:
-        if enable_imagecloud_logs:
-            print('загрузка картинок из облака...')
         if not os.path.exists(to_dir):
             os.mkdir(to_dir)
 
@@ -424,26 +412,36 @@ def download_dir(path, to_dir, deep=0):
                 ycloud_manager.download(cloud_obj_path, local_obj_path)
             else:
                 print()
-    if deep == 0:
-        if enable_imagecloud_logs:
-            print('загрузка картинок из облака завершена')
 
 
 def download_bd(enable_download_image=True, enable_download_base=True):
     if enable_download_base:
+        print('загрузка бд...')
         ycloud_manager.download("/cloud/borda.db", "db/borda.db")
+        print('загрузка бд завершена')
+
     if enable_download_image:
+        if enable_imagecloud_logs:
+            print('загрузка картинок из облака...')
         download_dir('cloud/images', 'static/images/uploads')
+        if enable_imagecloud_logs:
+            print('загрузка картинок из облака завершена')
 
 
 def upload_bd():
-    if enable_imagecloud_logs:
-        print('произошло обновление')
     if ycloud_manager.exists('/cloud/borda.db'):
         ycloud_manager.remove("/cloud/borda.db", permanently=True)
-    ycloud_manager.upload("db/borda.db", "/cloud/borda.db")
 
+    print('отгрузка бд на облако...')
+    ycloud_manager.upload("db/borda.db", "/cloud/borda.db")
+    print('отгрузка бд завершена')
+
+    if enable_imagecloud_logs:
+        print('отгрузка картинок на облако...')
     upload_dir('static/images/uploads', 'cloud/images')
+    if enable_imagecloud_logs:
+        print('отгрузка на облако кончилась')
+
     update_cloud_files()
 
 
@@ -451,10 +449,6 @@ def check_bd():
     """проверка бд на актуальность"""
     global db_is_outdated, timer_is_sleep, update_time
     if db_is_outdated:
-        uploading_thread = threading.Thread(target=download_bd,
-                                            kwargs={'enable_download_image': enable_image_sync_with_cloud,
-                                                    'enable_download_base': enable_download_base})
-        uploading_thread.start()
         upload_bd()
         db_is_outdated = False
         timer_is_sleep = False
