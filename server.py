@@ -317,7 +317,7 @@ def index2(db_section):
     # из    (отступ, пост, переменная_отвечающая_за_скрытие)
     # в     [отступ, пост, переменная_отвечающая_за_скрытие, список_id_постов-ответов]
     # апдейт: после этого преобразования все слетело [к черту],
-    # так что будут существовать 2 версии format_post одновременно (с ссылками на ответы и без)
+    # так что будут существовать 2 версии: format_posts_with_reply и format_post (с ссылками на ответы и без)
     last_main_post_id = 0
     format_posts_with_reply = []
     for i, post in enumerate(format_posts):
@@ -332,8 +332,11 @@ def index2(db_section):
 
     # если файла нет на сервере, но он есть в облаке, то картинка заменяется на картинку-сообщение о том,
     # что картинки сейчас качаются
+    # структура меняется на
+    # [отступ, пост, переменная_отвечающая_за_скрытие, список_id_постов-ответов, bool:есть_ли_картинка]
     update_local_files()
     for i, post in enumerate(format_posts_with_reply):
+        format_posts_with_reply[i].append(True)
         path = post[1].files
         if path is None:
             continue
@@ -341,7 +344,9 @@ def index2(db_section):
             continue
         path = path[len('static/images/uploads'):]
         if (path not in local_files) and (path in cloud_files):
-            format_posts_with_reply[i][1].files = 'static/images/downloading_message.png'
+            # format_posts_with_reply[i][1].files = 'static/images/downloading_message.png'
+            format_posts_with_reply[i][4] = False
+
 
     form2 = CloseButton()
 

@@ -5,12 +5,16 @@
         <button type="submit" class="btn btn-post btn-lg">написать пост</button>
     </form>
     <br>
-    {% for deep, post, hidden_button_val, reply_list in format_posts_with_reply %}
+    {% for deep, post, hidden_button_val, reply_list, is_image_download_now in format_posts_with_reply %}
         {% if deep == 1 %}
             <div style="margin-left: {{100 * (deep-1)}}px;" class="card card-body post">
                 <p>{{post.created_date}}</p>
                 {% if post.files != None %}
-                <a href="{{post.files}}" target="_blank"><img src={{post.files}} alt="не удалось загрузить картинку из {{post.files}}" ></a>
+                    {% if is_image_download_now %}
+                        <a href="{{post.files}}" target="_blank"><img src={{post.files}} alt="не удалось загрузить картинку из {{post.files}}" ></a>
+                    {% else %}
+                        <a href="static/images/downloading_message.png" target="_blank"><img src="static/images/downloading_message.png" alt="картинка загружается" ></a>
+                    {% endif %}
                 {% endif %}
                 <h2>{{post.title}}</h2>
                 <div>
@@ -45,11 +49,15 @@
             </div>
             <div class="collapse show" id="collapseExample{{loop.index}}">
                 {% for reply_id in reply_list %}
-                    {% set r_deep, r_post, r_hidden_button_val, r_reply_list = format_posts_with_reply[reply_id] %}
+                    {% set r_deep, r_post, r_hidden_button_val, r_reply_list, r_is_image_download_now = format_posts_with_reply[reply_id] %}
                     <div style="margin-left: {{100 * (r_deep-1)}}px;" class="card card-body post">
                         <p>{{r_post.created_date}}</p>
                         {% if r_post.files != None %}
-                        <a href="{{r_post.files}}" target="_blank"><img src={{r_post.files}} alt="не удалось загрузить картинку из {{r_post.files}}" class=""></a>
+                            {% if r_is_image_download_now %}
+                                <a href="{{r_post.files}}" target="_blank"><img src={{r_post.files}} alt="не удалось загрузить картинку из {{post.files}}" ></a>
+                            {% else %}
+                                <a href="static/images/downloading_message.png" target="_blank"><img src="static/images/downloading_message.png" alt="картинка загружается" ></a>
+                            {% endif %}
                         {% endif %}
                         <h2>{{r_post.title}}</h2>
                         <div>{{r_post.content}}</div>
