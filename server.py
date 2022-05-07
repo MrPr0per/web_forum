@@ -50,7 +50,7 @@ login_manager.init_app(app)
 ycloud_manager = yadisk.YaDisk(token="AQAAAABgRHWRAAfWz0e6ldvRxkQerikLrbA9aG8")
 
 # TODO: перед деплоем отключить:
-local_mode = False  # когда включен этот режим,
+local_mode =True  # когда включен этот режим,
 # отключается капча и синхронизация картинок, по другому генерируется время поста
 
 update_time = int(15 * 60)  # промежуток времени в секундах, через который делается проверка бд на актуальность
