@@ -218,7 +218,7 @@ def create_messenge(section, reply_to_id):
         file_href = request.form["file_href"]
         id = len(get_format_posts(section, buttons))
         if file:
-            filename = f"{filepath}{section}/picture{id}.{file.filename.split('.')[1]}"
+            filename = f"{filepath}{section}/file{id}.{file.filename.split('.')[-1]}"
             file.save(filename)
         elif file_href:
             filename = file_href
