@@ -42,14 +42,14 @@
                     <button type="submit" class="btn btn-reply">ответить</button>
                 </form>
                 <p>
-                  <button class="btn btn-show_repl" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample{{loop.index}}" aria-expanded="false" aria-controls="collapseExample">
+                  <button class="btn btn-show_repl collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample{{loop.index}}" aria-expanded="false" aria-controls="collapseExample">
                     скрыть/открыть ответы
                   </button>
                 </p>
             </div>
 <!--а вот тут я просто отрисую перве три ответа-->
                 {% for reply_id in reply_list %}
-                    {%if loop.index <=2%}
+                    {%if loop.index <=4%}
                         {% set r_deep, r_post, r_hidden_button_val, r_reply_list, r_is_image_download_now = format_posts_with_reply[reply_id] %}
                         <div style="margin-left: {{100 * (r_deep-1)}}px;" class="card card-body post">
                             <p>{{r_post.created_date}}</p>
@@ -84,9 +84,9 @@
                     {%endif%}
                 {% endfor %}
 <!--а вот тут уже будут ответы, которые можно скрывать/открывать-->
-            <div class="collapse show" id="collapseExample{{loop.index}}">
+            <div class="collapse" id="collapseExample{{loop.index}}">
                 {% for reply_id in reply_list %}
-                    {%if loop.index >2%}
+                    {%if loop.index >4%}
                         {% set r_deep, r_post, r_hidden_button_val, r_reply_list, r_is_image_download_now = format_posts_with_reply[reply_id] %}
                         <div style="margin-left: {{100 * (r_deep-1)}}px;" class="card card-body post">
                             <p>{{r_post.created_date}}</p>
